@@ -758,6 +758,7 @@ class 异界夺宝相关配置(BaseModel):
     异界夺宝战场BOSS剩余血量标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(108, 146, 165, 166))
     异界夺宝战场抢归属标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(102, 189, 176, 217))
     报名标记查找区域标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(473,227,1209,595))
+    异界夺宝抢归属按钮标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(103,192,176,215))
     
 
 
@@ -970,7 +971,7 @@ class 特殊活动(BaseModel):
     开服活动右侧小标签红点检查区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(1217,263,1253,614))
     怪物试炼活动倒计时文字区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(987,304,1082,338))
     怪物试炼活动领取奖励按钮区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(1069,348,1174,380))
-    左上角活动检查区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(325,143,489,237))
+    左上角活动检查区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(341,143,481,198))
     节日福利领取奖励按钮区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(1072,348,1171,380))
     节日试炼积分领取按钮区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(1126,297,1211,330))
     节日试炼积分奖励红点搜寻区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(607,236,994,678))
@@ -985,9 +986,10 @@ class 特殊活动(BaseModel):
 class 至尊联赛相关(BaseModel):
     """"""
     迷阵夺旗进入按钮区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(804,634,899,667))
-    # 怪物试炼活动倒计时文字区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(987,304,1082,338))
-    # 怪物试炼活动领取奖励按钮区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(1069,348,1174,380))
-   
+    迷阵夺旗死亡问号校正区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(189,29,239,75))
+    迷阵夺旗按钮翡翠荣耀旗: 区域坐标 = Field(default_factory=lambda: 区域坐标(59,177,87,188))
+    迷阵夺旗按钮金岩霸者旗: 区域坐标 = Field(default_factory=lambda: 区域坐标(118,176,154,190))
+    迷阵夺旗按钮赤焰战神旗: 区域坐标 = Field(default_factory=lambda: 区域坐标(186,176,216,190))
 
 class 焚天炎域页面(BaseModel):
     """"""

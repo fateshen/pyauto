@@ -138,6 +138,7 @@ class 降魔任务(战斗任务执行器):
             return
         if self.任务状态.上次次数核查时间+600<time.time():
             return
+        self.任务状态.上次次数核查时间=time.time
         self.执行入口逻辑()
         if self.任务状态.协助剩余次数==0 and self.任务状态.剩余次数==0:
             调试器.state(self.调试分类, "已用完协助次数，跳过执行")

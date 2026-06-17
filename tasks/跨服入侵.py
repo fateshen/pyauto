@@ -94,7 +94,7 @@ class 跨服入侵任务(战斗任务执行器):
         else:
             BOSS选择按钮=self.游戏配置.区域.跨服入侵旧.获取(bossid)
         if BOSS选择按钮 is None:
-            调试器.error(self.调试分类, f"BOSS选择按钮未找到，任务中断")
+            调试器.error(self.调试分类, f"BOSS选择按钮未找到(bossid={bossid})")
             return False
         
         颜色统计=self.线程.像素分析器.count_colors(截图,BOSS选择按钮.元组,"000DFE,0.95")
@@ -106,9 +106,10 @@ class 跨服入侵任务(战斗任务执行器):
             return True
         
         # 三首龙已击杀
-        if bossid==1:
+        if bossid==1 and datetime.datetime.now().minute>=48:
             结果= self.辅助识别器.查找图片单结果(self.游戏配置.区域.跨服入侵.跨服入侵页面BOSS选择图标范围标签.元组,目标图标路径="三首龙图标.bmp")
             if 结果:
+                调试器.state(self.调试分类, "三首龙已击杀，跳过执行")  
                 self.任务状态.剩余次数=0
                 return False
 

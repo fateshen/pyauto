@@ -981,7 +981,11 @@ class 战斗辅助识别器:
         面板坐标=self.游戏配置.玩家.敌人面板坐标
         if 面板坐标 is None:
             return None
-        if self.区域像素统计(面板坐标, "0000FF,0.95"):
+        像素统计=self.区域像素统计(面板坐标, "0000FF,1")
+        if not 像素统计:
+            return False
+        if 像素统计[0] > 100:
+            调试器.debug("战斗助手", f"敌人面板有敌人: {像素统计[0]}")
             return True
         return False
     

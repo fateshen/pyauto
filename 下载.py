@@ -22,7 +22,7 @@ def run_git_command(cmd, cwd=None):
     except Exception as e:
         print(f"❌ 异常: {e}")
         return None
-
+# Auto> uv run pyinstaller 游戏助手.spec   
 # 使用示例：一键同步到 Gitee
 def git_sync(project_path, commit_message="自动提交"):
     """一键 Git 同步"""

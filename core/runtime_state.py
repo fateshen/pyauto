@@ -269,10 +269,21 @@ class 运行时公共变量:
         返回:
             死亡时间戳，如果不存在返回 -1
         """
+        # 防御性检查1：参数类型和范围
+        if not isinstance(n, int):
+            return -1
+        if n < 1:
+            return -1
+        
         索引 = n - 1
-        if 0 <= 索引 < len(self.死亡时间列表):
-            return self.死亡时间列表[索引]
-        return -1
+        列表长度 = len(self.死亡时间列表)
+        
+        # 防御性检查2：索引边界
+        if 索引 >= 列表长度:
+            return -1
+        
+        # 安全访问
+        return self.死亡时间列表[索引]
     def 获取死亡间隔(self, n: int = 1) -> float:
         """
         获取距离第N次死亡过去了多少秒
