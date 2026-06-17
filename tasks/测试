@@ -1,0 +1,68 @@
+# tasks/putong.py
+"""
+普通任务定义
+"""
+from calendar import prcal
+from gc import get_count
+
+from charset_normalizer.constant import TRACE
+from click.core import F
+from sympy import false
+from typer.main import get_install_completion_arguments
+
+from tasks.base import 任务定义
+from core.task_executors.battle_executor import 战斗任务执行器
+from core.page_operations import 页面操作集
+from core.debug import 调试器,set_global_level
+import time
+import re
+
+
+@任务定义(
+    任务ID="测试任务",
+    任务名称="测试任务",
+    调试模式=True,
+    优先级=0,
+    每日次数=3,
+    地图关键字="陨",
+    提前进场秒数=0,
+    默认攻击模式="全体模式", 
+
+)
+class 测试任务(战斗任务执行器):
+    """测试功能，修改执行函数"""
+    
+    def __init__(self, 线程, 任务配置, 任务状态):
+        super().__init__(线程, 任务配置, 任务状态)       
+
+
+    
+    # ==================== 主执行流程 ====================
+    
+    def 执行(self) -> str:
+        """
+        执行任务（模板方法）
+        
+        子类不应重写此方法，而是重写：
+        - 是否在副本中()
+        - 执行入口逻辑()
+        """
+        调试器.info("普通任务", f"开始执行: {self.任务配置.任务名称}({self.任务配置.任务ID})")
+        self.测试()
+
+    def 测试(self):
+        # openm= self.页面.主界面操作.进入合成页面("神,装","神,剑")
+        # print(openm)
+        # self.检查攻击模式()
+        # self.线程.聊天管理器.添加发送任务("行会", "测试消息")
+        # set_global_level(7)
+        # 玩家血量= self.辅助识别器.获取玩家血量
+        # 调试器.info("普通任务", f"玩家血量: {玩家血量}")
+        # # 玩家名字= self.辅助识别器.获取玩家角色名称()
+        # # 调试器.info("普通任务", f"玩家名称: {玩家名字}")
+        time.sleep(2)
+        # set_global_level(4)
+
+    def 执行入口逻辑(self) -> bool:
+        """执行任务入口逻辑"""
+        return True
