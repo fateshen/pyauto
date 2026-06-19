@@ -46,7 +46,11 @@ class 战斗配置标签页(QWidget):
         self.战斗_刷新等待 = QDoubleSpinBox()
         self.战斗_刷新等待.setRange(0.1, 5)
         self.战斗_刷新等待.setSingleStep(0.1)
-        等待布局.addRow("刷新等待(秒):", self.战斗_刷新等待)
+        等待布局.addRow("刷新等待(秒):", self.战斗_刷新等待)        
+        self.战斗_默认等待毫秒 = QDoubleSpinBox()
+        self.战斗_默认等待毫秒.setRange(150, 800)
+        self.战斗_默认等待毫秒.setSingleStep(10)
+        等待布局.addRow("默认等待(毫秒):", self.战斗_默认等待毫秒)
         布局.addWidget(等待组)
         
         # 自动战斗配置
@@ -84,6 +88,7 @@ class 战斗配置标签页(QWidget):
         self.战斗_开战超时.setValue(战斗.超时.开战超时秒数)
         self.战斗_循环间隔.setValue(战斗.等待.主循环间隔秒)
         self.战斗_刷新等待.setValue(战斗.等待.刷新等待秒)
+        self.战斗_默认等待毫秒.setValue(战斗.等待.默认等待毫秒)
         self.战斗_自动战斗.setChecked(战斗.自动战斗.启用自动战斗)
         self.战斗_自动走位.setChecked(战斗.自动战斗.启用自动走位)
     
@@ -97,6 +102,7 @@ class 战斗配置标签页(QWidget):
             "开战超时": self.战斗_开战超时.value(),
             "循环间隔": self.战斗_循环间隔.value(),
             "刷新等待": self.战斗_刷新等待.value(),
+            "默认等待毫秒": self.战斗_默认等待毫秒.value(),
             "自动战斗": self.战斗_自动战斗.isChecked(),
             "自动走位": self.战斗_自动走位.isChecked(),
         }
@@ -115,6 +121,8 @@ class 战斗配置标签页(QWidget):
             self.战斗_循环间隔.setValue(副本["循环间隔"])
         if "刷新等待" in 副本:
             self.战斗_刷新等待.setValue(副本["刷新等待"])
+        if "默认等待毫秒" in 副本:
+            self.战斗_默认等待毫秒.setValue(副本["默认等待毫秒"])
         if "自动战斗" in 副本:
             self.战斗_自动战斗.setChecked(副本["自动战斗"])
         if "自动走位" in 副本:

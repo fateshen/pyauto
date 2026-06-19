@@ -67,6 +67,9 @@ class 主窗口(QMainWindow):
         self._初始化菜单栏()
         self._初始化状态栏()
         self._连接信号()
+    
+        if self.窗口列表.count() > 0:
+            self.窗口列表.setCurrentRow(0)
 
         # UMI-OCR 监控
         self.umi监控定时器 = QTimer()
@@ -74,6 +77,7 @@ class 主窗口(QMainWindow):
         self.umi监控定时器.start(3000)
         self._检查UMI状态()
     
+     
     def _禁用滚轮(self):
         QAbstractSpinBox.wheelEvent = lambda self, event: event.ignore()
         QComboBox.wheelEvent = lambda self, event: event.ignore()
@@ -566,6 +570,7 @@ class 主窗口(QMainWindow):
                 "开战超时": 配置.战斗.超时.开战超时秒数,
                 "循环间隔": 配置.战斗.等待.主循环间隔秒,
                 "刷新等待": 配置.战斗.等待.刷新等待秒,
+                "默认等待毫秒": 配置.战斗.等待.默认等待毫秒,
                 "自动战斗": 配置.战斗.自动战斗.启用自动战斗,
                 "自动走位": 配置.战斗.自动战斗.启用自动走位,
             }
@@ -597,8 +602,38 @@ class 主窗口(QMainWindow):
                 "强化奖励": {},
             }
     
+    # def _加载任务配置从文件(self, 窗口名称, 默认任务列表):
+    #     import copy
+    #     任务列表 = copy.deepcopy(默认任务列表)
+        
+    #     配置路径 = Path("config") / 窗口名称 / "tasks_config.json"
+    #     if not 配置路径.exists():
+    #         return 任务列表
+        
+    #     try:
+    #         with open(配置路径, 'r', encoding='utf-8') as f:
+    #             数据 = json.load(f)
+            
+    #         文件任务列表 = 数据.get("任务列表", [])
+    #         文件任务映射 = {t["任务ID"]: t for t in 文件任务列表}
+            
+    #         for 任务 in 任务列表:
+    #             if 任务.任务ID in 文件任务映射:
+    #                 for 字段名, 值 in 文件任务映射[任务.任务ID].items():
+    #                     if 字段名 != "任务ID" and hasattr(任务, 字段名):
+    #                         if 值 is None:
+    #                             setattr(任务, 字段名, None)
+    #                         else:
+    #                             setattr(任务, 字段名, 值)
+    #     except Exception:
+    #         pass
+        
+    #     return 任务列表
+    
+
     def _加载任务配置从文件(self, 窗口名称, 默认任务列表):
         import copy
+        from tasks import 程序任务配置版本
         任务列表 = copy.deepcopy(默认任务列表)
         
         配置路径 = Path("config") / 窗口名称 / "tasks_config.json"
@@ -609,17 +644,52 @@ class 主窗口(QMainWindow):
             with open(配置路径, 'r', encoding='utf-8') as f:
                 数据 = json.load(f)
             
+            文件版本 = 数据.get("版本", "0")
             文件任务列表 = 数据.get("任务列表", [])
             文件任务映射 = {t["任务ID"]: t for t in 文件任务列表}
             
-            for 任务 in 任务列表:
-                if 任务.任务ID in 文件任务映射:
-                    for 字段名, 值 in 文件任务映射[任务.任务ID].items():
-                        if 字段名 != "任务ID" and hasattr(任务, 字段名):
-                            if 值 is None:
-                                setattr(任务, 字段名, None)
-                            else:
-                                setattr(任务, 字段名, 值)
+            if 文件版本 != 程序任务配置版本:
+                # 版本更新：只保留 UI 字段
+                for 任务 in 任务列表:
+                    if 任务.任务ID in 文件任务映射:
+                        旧数据 = 文件任务映射[任务.任务ID]
+                        ui字段 = set(任务配置定义.get(任务.任务名称, {}).keys())
+                        需要保留的字段 = ui字段 | {"当前任务可执行的最高层数", "打不过的敌人", "跨服入侵三首龙任务开启",
+                                          "上一次完成时间"}
+                        for 字段名 in 需要保留的字段:
+                            if 字段名 in 旧数据:
+                                setattr(任务, 字段名, 旧数据[字段名])
+                # 保存合并后的配置
+                所有任务配置 = []
+                for 任务 in 任务列表:
+                    项 = {"任务ID": 任务.任务ID, "任务名称": 任务.任务名称}
+                    for 字段名 in 任务配置定义.get(任务.任务名称, {}):
+                        项[字段名] = getattr(任务, 字段名, None)
+                    所有任务配置.append(项)
+                
+                数据 = {
+                    "版本": 程序任务配置版本,
+                    "窗口名称": 窗口名称,
+                    "更新时间": time.strftime("%Y-%m-%d %H:%M:%S"),
+                    "任务数量": len(所有任务配置),
+                    "任务列表": 所有任务配置,
+                }
+                
+                配置路径.parent.mkdir(parents=True, exist_ok=True)
+                with open(配置路径, 'w', encoding='utf-8') as f:
+                    json.dump(数据, f, ensure_ascii=False, indent=2)
+                
+                调试器.info("配置", f"窗口 '{窗口名称}' 任务配置版本更新: v{文件版本} → v{程序任务配置版本}")   
+            else:
+                # 版本一致：原版逻辑
+                for 任务 in 任务列表:
+                    if 任务.任务ID in 文件任务映射:
+                        for 字段名, 值 in 文件任务映射[任务.任务ID].items():
+                            if 字段名 != "任务ID" and hasattr(任务, 字段名):
+                                if 值 is None:
+                                    setattr(任务, 字段名, None)
+                                else:
+                                    setattr(任务, 字段名, 值)
         except Exception:
             pass
         
@@ -793,13 +863,14 @@ class 主窗口(QMainWindow):
     
     def _保存任务配置到文件(self, 窗口名称, 任务编辑副本):
         配置路径 = Path("config") / 窗口名称 / "tasks_config.json"
-        
+        版本=None
         # 读取旧配置作为基础
         旧任务映射 = {}
         if 配置路径.exists():
             try:
                 with open(配置路径, 'r', encoding='utf-8') as f:
                     旧数据 = json.load(f)
+                    版本= 旧数据.get("版本")
                 for t in 旧数据.get("任务列表", []):
                     旧任务映射[t["任务ID"]] = t
             except:
@@ -830,9 +901,11 @@ class 主窗口(QMainWindow):
                         任务配置数据[字段名] = 值
             
             所有任务配置.append(任务配置数据)
-        
+        if 版本 is None:
+            from tasks import 程序任务配置版本
+            版本 = 程序任务配置版本
         数据 = {
-            "版本": "1.0",
+            "版本": 版本,
             "窗口名称": 窗口名称,
             "更新时间": time.strftime("%Y-%m-%d %H:%M:%S"),
             "任务数量": len(所有任务配置),
@@ -845,12 +918,13 @@ class 主窗口(QMainWindow):
     
     def _保存强化奖励配置到文件(self, 窗口名称, 强化奖励编辑副本):
         奖励配置路径 = Path("config") / 窗口名称 / "reward_tasks_config.json"
-        
+        版本=None
         旧奖励映射 = {}
         if 奖励配置路径.exists():
             try:
                 with open(奖励配置路径, 'r', encoding='utf-8') as f:
                     旧数据 = json.load(f)
+                    版本=旧数据.get("版本")
                 for t in 旧数据.get("任务列表", []):
                     旧奖励映射[t["任务ID"]] = t
             except:
@@ -881,9 +955,11 @@ class 主窗口(QMainWindow):
                         任务数据[字段名] = 值
             
             所有奖励配置.append(任务数据)
-        
+        if 版本 is  None:
+            from core.reward_manager import 强化奖励配置版本
+            版本=强化奖励配置版本
         奖励数据 = {
-            "版本": "1.0",
+            "版本": 版本,
             "窗口名称": 窗口名称,
             "更新时间": time.strftime("%Y-%m-%d %H:%M:%S"),
             "任务数量": len(所有奖励配置),
@@ -903,6 +979,7 @@ class 主窗口(QMainWindow):
         战斗.超时.开战超时秒数 = 战斗副本.get("开战超时", 战斗.超时.开战超时秒数)
         战斗.等待.主循环间隔秒 = 战斗副本.get("循环间隔", 战斗.等待.主循环间隔秒)
         战斗.等待.刷新等待秒 = 战斗副本.get("刷新等待", 战斗.等待.刷新等待秒)
+        战斗.等待.默认等待毫秒 = 战斗副本.get("默认等待毫秒", 战斗.等待.默认等待毫秒)
         战斗.自动战斗.启用自动战斗 = 战斗副本.get("自动战斗", 战斗.自动战斗.启用自动战斗)
         战斗.自动战斗.启用自动走位 = 战斗副本.get("自动走位", 战斗.自动战斗.启用自动走位)
         配置.保存到文件()
@@ -965,6 +1042,7 @@ class 主窗口(QMainWindow):
         线程.游戏配置.战斗.超时.开战超时秒数 = 战斗.超时.开战超时秒数
         线程.游戏配置.战斗.等待.主循环间隔秒 = 战斗.等待.主循环间隔秒
         线程.游戏配置.战斗.等待.刷新等待秒 = 战斗.等待.刷新等待秒
+        线程.游戏配置.战斗.等待.默认等待毫秒 = 战斗.等待.默认等待毫秒
         线程.游戏配置.战斗.自动战斗.启用自动战斗 = 战斗.自动战斗.启用自动战斗
         线程.游戏配置.战斗.自动战斗.启用自动走位 = 战斗.自动战斗.启用自动走位
         

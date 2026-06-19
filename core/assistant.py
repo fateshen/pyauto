@@ -580,7 +580,7 @@ class 战斗辅助识别器:
         return ""
     
      #==================== 查询操作 ====================
-    def 查找图片单结果(self, 查询区域:Tuple[int,int,int,int],目标图标路径:str) -> Optional[Tuple[int, int,int, int]]:
+    def 查找图片单结果(self, 查询区域:Tuple[int,int,int,int],目标图标路径:str,相似度:float=0.8) -> Optional[Tuple[int, int,int, int]]:
         截图 = self.线程.截图
         if 截图 is None: 
             截图= self.线程.刷新截图()
@@ -590,13 +590,13 @@ class 战斗辅助识别器:
         匹配结果 = 模板匹配器.match_bypicture(
             截图,
             目标图标路径,
-            0.8,
+            相似度,
             查询区域,
         )
         if 匹配结果: return 匹配结果.rect
 
         return None
-    def 查找图片多结果(self, 搜索区域:Tuple[int,int,int,int],目标图标路径:str) -> List[Tuple[int, int,int, int]]:
+    def 查找图片多结果(self, 搜索区域:Tuple[int,int,int,int],目标图标路径:str,相似度:float=0.8) -> List[Tuple[int, int,int, int]]:
         截图 = self.线程.截图
         if 截图 is None: 
             截图= self.线程.刷新截图()
@@ -607,7 +607,7 @@ class 战斗辅助识别器:
         匹配结果 = 模板匹配器.match_all_bypicture(
             截图,
             目标图标路径,
-            0.8,
+            相似度,
             搜索区域,
         )
         for 匹配 in 匹配结果: 

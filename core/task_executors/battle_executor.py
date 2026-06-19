@@ -26,7 +26,7 @@ from abc import abstractmethod
 
 from rich.repr import T
 
-from core.utils import 匹配分组关键字, 解析时间文字, 读取图片, 重试,归属情况
+from core.utils import 匹配分组关键字, 提取次数, 解析时间文字, 读取图片, 重试,归属情况
 from core.debug import 调试器
 from models.task_config import 任务配置基类
 from .base_executor import 任务执行器基类
@@ -174,7 +174,7 @@ class 战斗任务执行器(任务执行器基类):
         # ========== 确定当前阶段 ==========
         是否抢怪 = self._是否抢怪阶段()
         启用高战避让 = self._是否启用高战避让()
-        
+        self._更新当前可用最高层数()
         # ========== 1. 死亡复活 + 避让联动 ==========
         if self.检查并处理复活(
             安全复活=not 是否抢怪,
@@ -250,6 +250,16 @@ class 战斗任务执行器(任务执行器基类):
 
         return "进行中"
     
+    def _更新当前可用最高层数(self):
+        地图名=self.线程.当前地图
+        if 匹配分组关键字(地图名, self.任务配置.地图关键字):
+            层数=提取次数(地图名)
+            if 层数 > self.任务配置.当前任务可执行的最高层数:                
+                self.任务配置.当前任务可执行的最高层数 = 层数
+                调试器.debug(self.调试分类, f"更新当前任务可执行最高层数: {层数}")    
+                from tasks.base import 任务定义            
+                任务定义.导出配置到JSON(self.线程.窗口名称,线程=self.线程)   
+
 
     def _检查点击摇人按钮(self) :
         if self.任务配置.启用摇人按钮:

@@ -15,6 +15,18 @@ from core.debug import 调试器
 from .region_config import 区域配置, 区域坐标
 from .battle_config import 战斗配置
 
+玩家配置版本 = "1.1"
+
+# 用户数据字段（版本更新时保留）
+用户保留字段 = {
+    "窗口名称", "玩家角色名称", "玩家公会名称",
+    "窗口偏移X", "窗口偏移Y",
+    "启用召唤响应", "召唤响应白名单", "召唤响应黑名单",
+    "默认攻击模式", "启用通知消息", "发送太古祖龙刷新通知","公会成员列表",
+    "公会名单更新时间","敌人面板坐标",  "服务器范围低","服务器范围高",
+
+}
+
 class 玩家配置(BaseModel):
     """
     玩家配置 - 每个窗口独立
@@ -26,7 +38,7 @@ class 玩家配置(BaseModel):
     窗口名称: str = "游戏1"
     
     # 游戏基本信息
-    游戏标题: str = "上古"
+    游戏标题: str = "上古|帝王"
     游戏分辨率: tuple = (1700, 884)
     
     # 窗口偏移（解决窗口边框问题）
@@ -72,6 +84,24 @@ class 玩家配置(BaseModel):
         """创建默认玩家配置"""
         return cls(窗口名称=窗口名称)
     
+    # @classmethod
+    # def 从文件加载(cls, 窗口名称: str) -> '玩家配置':
+    #     """从JSON文件加载玩家配置"""
+    #     文件名 = f"{窗口名称}/user_config.json"
+    #     文件路径 = path_mgr.get_config_path(文件名)
+        
+    #     if not Path(文件路径).exists():
+    #         调试器.warning("玩家配置", f"配置文件不存在: {文件路径}，使用默认配置")
+    #         return cls.创建默认(窗口名称)
+        
+    #     try:
+    #         with open(文件路径, 'r', encoding='utf-8') as f:
+    #             数据 = json.load(f)
+    #         调试器.info("玩家配置", f"从文件加载: {文件路径}")
+    #         return cls(**数据)
+    #     except Exception as e:
+    #         调试器.error("玩家配置", f"加载配置文件失败: {文件路径}, 错误: {e}")
+    #         return cls.创建默认(窗口名称)
     @classmethod
     def 从文件加载(cls, 窗口名称: str) -> '玩家配置':
         """从JSON文件加载玩家配置"""
@@ -80,42 +110,132 @@ class 玩家配置(BaseModel):
         
         if not Path(文件路径).exists():
             调试器.warning("玩家配置", f"配置文件不存在: {文件路径}，使用默认配置")
-            return cls.创建默认(窗口名称)
+            默认配置 = cls.创建默认(窗口名称)
+            默认配置.保存到文件(版本=玩家配置版本)
+            return 默认配置
         
         try:
             with open(文件路径, 'r', encoding='utf-8') as f:
                 数据 = json.load(f)
+            
+            文件版本 = 数据.get("版本", "0")
+            
+            if 文件版本 != 玩家配置版本:
+                新配置 = cls.创建默认(窗口名称)
+                
+                # 顶层用户保留字段
+                for 字段名 in 用户保留字段:
+                    if 字段名 in 数据:
+                        setattr(新配置, 字段名, 数据[字段名])
+                
+                # 战斗配置：保留 UI 字段
+                if "战斗" in 数据:
+                    战斗数据 = 数据["战斗"]
+                    战斗UI字段 = [
+                        "无目标超时秒数", "静止超时秒数", "开战超时秒数",
+                        "主循环间隔秒", "刷新等待秒", "默认等待毫秒",
+                        "启用自动战斗", "启用自动走位",
+                    ]
+                    for f in 战斗UI字段:
+                        if f in 战斗数据:
+                            if f in ["无目标超时秒数", "静止超时秒数", "开战超时秒数"]:
+                                setattr(新配置.战斗.超时, f, 战斗数据[f])
+                            elif f in ["主循环间隔秒", "刷新等待秒", "默认等待毫秒"]:
+                                setattr(新配置.战斗.等待, f, 战斗数据[f])
+                            elif f in ["启用自动战斗", "启用自动走位"]:
+                                setattr(新配置.战斗.自动战斗, f, 战斗数据[f])
+                
+                # 避让/回城 等 UI 字段
+                if "战斗" in 数据 and "复活" in 数据["战斗"]:
+                    复活数据 = 数据["战斗"]["复活"]
+                    复活UI字段 = [
+                        "启用高战避让模式", "避让杀手名单", "避让冷却秒数",
+                        "启用高频死亡避让模式", "高频死亡避让次数", "高频死亡避让秒数",
+                    ]
+                    for f in 复活UI字段:
+                        if f in 复活数据:
+                            setattr(新配置.战斗.复活, f, 复活数据[f])
+                
+                if "战斗" in 数据 and "检测" in 数据["战斗"]:
+                    检测数据 = 数据["战斗"]["检测"]
+                    检测UI字段 = ["启用回城回血", "回城血量阈值"]
+                    for f in 检测UI字段:
+                        if f in 检测数据:
+                            setattr(新配置.战斗.检测, f, 检测数据[f])
+                
+                # 服务器相关
+                for f in ["服务器规则视为队友", "服务器范围低", "服务器范围高"]:
+                    if f in 数据:
+                        setattr(新配置, f, 数据[f])
+                
+                调试器.info("玩家配置", f"配置版本更新: v{文件版本} → v{玩家配置版本}")
+                新配置.保存到文件(版本=玩家配置版本)
+                return 新配置
+            
             调试器.info("玩家配置", f"从文件加载: {文件路径}")
             return cls(**数据)
         except Exception as e:
             调试器.error("玩家配置", f"加载配置文件失败: {文件路径}, 错误: {e}")
             return cls.创建默认(窗口名称)
     
-    def 保存到文件(self) -> bool:
+    # def 保存到文件(self) -> bool:
+    #     """保存玩家配置到JSON文件"""
+    #     文件名 = f"{self.窗口名称}/user_config.json"
+    #     文件路径 = path_mgr.get_config_path(文件名)
+    #       # 确保目录存在
+    #     Path(文件路径).parent.mkdir(parents=True, exist_ok=True)
+        
+    #     # 转换值函数：处理嵌套的 BaseModel
+    #     def 转换值(值):
+    #         if isinstance(值, BaseModel):
+    #             return 值.dict()
+    #         return 值
+        
+    #     # 排除不需要保存的字段
+    #     exclude_fields = {'静止检测点组'}
+        
+    #     # 构建数据字典，排除私有字段和指定字段
+    #     数据 = {}
+    #     for k, v in self.__dict__.items():
+    #         # 跳过私有字段和排除字段
+    #         if k.startswith('_'):
+    #             continue
+    #         if k in exclude_fields:
+    #             continue
+    #         数据[k] = 转换值(v)
+        
+    #     try:
+    #         with open(文件路径, 'w', encoding='utf-8') as f:
+    #             json.dump(数据, f, ensure_ascii=False, indent=2)
+    #         调试器.info("玩家配置", f"保存到文件: {文件路径}")
+    #         return True
+    #     except Exception as e:
+    #         调试器.error("玩家配置", f"保存配置文件失败: {文件路径}, 错误: {e}")
+    #         return False
+    def 保存到文件(self, 版本: Optional[str] = None) -> bool:
         """保存玩家配置到JSON文件"""
         文件名 = f"{self.窗口名称}/user_config.json"
         文件路径 = path_mgr.get_config_path(文件名)
-          # 确保目录存在
         Path(文件路径).parent.mkdir(parents=True, exist_ok=True)
         
-        # 转换值函数：处理嵌套的 BaseModel
         def 转换值(值):
             if isinstance(值, BaseModel):
                 return 值.dict()
             return 值
         
-        # 排除不需要保存的字段
         exclude_fields = {'静止检测点组'}
         
-        # 构建数据字典，排除私有字段和指定字段
         数据 = {}
         for k, v in self.__dict__.items():
-            # 跳过私有字段和排除字段
             if k.startswith('_'):
                 continue
             if k in exclude_fields:
                 continue
             数据[k] = 转换值(v)
+        
+        if 版本 is None:
+            版本 = 玩家配置版本
+        数据["版本"] = 版本
         
         try:
             with open(文件路径, 'w', encoding='utf-8') as f:

@@ -69,6 +69,7 @@ class 窗口线程(threading.Thread):
 
         self.窗口句柄 = 窗口句柄
         self.窗口名称 = 窗口名称
+        self.父窗口句柄 = self._获取父窗口句柄(窗口句柄) 
         self.daemon = True
 
         self.主城死亡= False
@@ -154,7 +155,54 @@ class 窗口线程(threading.Thread):
         self.界面信息抽查时间=0
         self.特殊活动存在=False
         self.上次特殊活动检查时间=0
-            
+    def _获取父窗口句柄(self, hwnd: int) -> int:
+        """获取顶层父窗口句柄"""
+        # import win32gui
+        父句柄 = hwnd
+        while True:
+            上级 = win32gui.GetParent(父句柄)
+            if 上级 == 0:
+                break
+            父句柄 = 上级
+        return 父句柄      
+    def _重新获取窗口句柄(self) -> bool:
+        """
+        刷新游戏后子句柄可能变化，重新枚举匹配
+        """
+        # import win32gui
+        
+        # 当前句柄有效 → 跳过
+        if win32gui.IsWindow(self.窗口句柄):
+            return True
+        
+        if not win32gui.IsWindow(self.父窗口句柄):
+            调试器.error("线程", "父窗口已关闭")
+            return False
+        
+        游戏标题 = self.游戏配置.玩家.游戏标题
+        
+        def 枚举子窗口(hwnd, 结果):
+            if win32gui.IsWindowVisible(hwnd):
+                标题 = win32gui.GetWindowText(hwnd)
+                if 匹配分组关键字( 标题,游戏标题):
+                    结果.append(hwnd)
+            return True
+        
+        子窗口列表 = []
+        win32gui.EnumChildWindows(self.父窗口句柄, 枚举子窗口, 子窗口列表)
+        
+        if not 子窗口列表:
+            调试器.error("线程", "未找到游戏子窗口")
+            return False
+        
+        新句柄 = 子窗口列表[0]
+        
+        if 新句柄 != self.窗口句柄:
+            调试器.state("线程", f"窗口句柄更新: {self.窗口句柄} → {新句柄}")
+            self.窗口句柄 = 新句柄
+            self.动作执行器.hwnd = 新句柄
+        
+        return True 
     def 暂停(self):
         self._暂停标志 = True
     
@@ -293,10 +341,10 @@ class 窗口线程(threading.Thread):
         """在盟重省且17-18点时更新公会成员"""
         # 条件1：地图是盟重省     
         
-        # 条件2：17点到18点
-        当前小时 = time.localtime().tm_hour
-        if not (17 <= 当前小时 ):
-            return
+        # # 条件2：17点到18点
+        # 当前小时 = time.localtime().tm_hour
+        # if not (17 <= 当前小时 ):
+        #     return
         
         # 条件3：今天还没更新过
         上次更新 = self.游戏配置.玩家.公会名单更新时间
@@ -879,7 +927,21 @@ class 窗口线程(threading.Thread):
 
     def _根据复查情况选择刷新路径(self,复查情况):
         if 复查情况 is None:
-            if self.页面.创建点击文字操作(self.游戏配置.区域.掉线检查.掉线刷新游戏按钮区域标签.元组, "刷|新"):
+            if self.页面.创建点击文字操作(self.游戏配置.区域.掉线检查.掉线刷新游戏按钮区域标签.元组, "刷|新").执行():
+                time.sleep(2)
+                self.刷新截图()
+                self._处理游戏加载弹窗()
+                
+                # 等待游戏加载完成
+                time.sleep(2)
+                self.刷新截图()
+                self.识别地图()
+                
+                # 重置次数                
+                self._重置卡死相关任务次数()                
+                调试器.info("卡死检测", "掉线，游戏刷新完成")
+                return True
+            if self.页面.创建点击文字操作(self.游戏配置.区域.掉线检查.断开连接情况区域标签.元组, "确|定").执行():
                 time.sleep(2)
                 self.刷新截图()
                 self._处理游戏加载弹窗()
@@ -1005,6 +1067,13 @@ class 窗口线程(threading.Thread):
         
         # ===== 后台操作：等待加载 + 处理弹窗 + 进入游戏 =====
         time.sleep(2)
+        # ===== 重新获取窗口句柄 =====
+        if not self._重新获取窗口句柄():
+            调试器.error("线程", "窗口句柄获取失败，停止线程")
+            前台锁.释放(self.窗口名称)
+            self._停止标志 = True
+            return
+
         self.刷新截图()
         self._处理游戏加载弹窗()
         

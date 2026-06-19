@@ -561,7 +561,7 @@ class 异界夺宝任务(战斗任务执行器):
             return False
         文字 = self.线程.文字识别器.recognize_text(截图, 区域.元组)
         调试器.trace(self.调试分类, f"报名按钮文字: '{文字}'")
-        return 匹配分组关键字(文字 or "", "已|己,报|报名")
+        return 匹配分组关键字(文字 or "", "已|己")
     
     def _查找特征图标(self, 特征名: str) -> Optional[Tuple[int, int, int, int]]:
         区域 = self.游戏配置.区域.异界夺宝.报名标记查找区域标签

@@ -335,9 +335,7 @@ class TemplateMatcher:
         # matches.sort(key=lambda m: (m.left, m.top))
         
         # return matches
-         # 去重：重叠的保留置信度最高的
-         
-        print(f"去重前: {len(matches)}个")  
+         # 去重：重叠的保留置信度最高的  
         去重后 = []
         for m in matches:
             重叠 = False

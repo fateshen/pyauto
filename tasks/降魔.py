@@ -136,7 +136,7 @@ class 降魔任务(战斗任务执行器):
     def _降魔协助强制检查次数退出(self) ->str|None:
         if self.任务状态.剩余次数>0:
             return
-        if self.任务状态.上次次数核查时间+600<time.time():
+        if self.任务状态.上次次数核查时间+600>time.time():
             return
         self.任务状态.上次次数核查时间=time.time
         self.执行入口逻辑()

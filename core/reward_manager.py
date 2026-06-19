@@ -5,9 +5,10 @@
 import time
 import json
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 from core.debug import 调试器
 
+强化奖励配置版本 = "1.1"
 
 class 强化奖励管理器:
     """强化奖励任务管理器"""
@@ -35,44 +36,94 @@ class 强化奖励管理器:
             实例 = 任务类(self)
             self.任务实例列表.append(实例)
     
+    # def _加载配置(self):
+    #     """从配置文件读取参数覆盖默认值"""
+    #     配置路径 = Path("config") / self.窗口名称 / "reward_tasks_config.json"
+    #     if not 配置路径.exists():
+    #         self.保存配置()
+    #         return
+        
+    #     try:
+    #         with open(配置路径, 'r', encoding='utf-8') as f:
+    #             数据 = json.load(f)
+            
+    #         配置映射 = {t["任务ID"]: t for t in 数据.get("任务列表", [])}
+            
+    #         for 实例 in self.任务实例列表:
+    #             if 实例.任务ID in 配置映射:
+    #                 配置 = 配置映射[实例.任务ID]
+    #                 for 字段名, 值 in 配置.items():
+    #                     if hasattr(实例, 字段名) and 字段名 != "任务ID":
+    #                         # 类型转换
+    #                         当前值 = getattr(实例, 字段名)
+    #                         if isinstance(当前值, bool):
+    #                             setattr(实例, 字段名, bool(值))
+    #                         elif isinstance(当前值, int):
+    #                             setattr(实例, 字段名, int(值))
+    #                         elif isinstance(当前值, float):
+    #                             setattr(实例, 字段名, float(值))
+    #                         else:
+    #                             setattr(实例, 字段名, 值)
+    #     except Exception as e:
+    #         调试器.warning("强化奖励", f"加载配置失败: {e}")
+
     def _加载配置(self):
-        """从配置文件读取参数覆盖默认值"""
         配置路径 = Path("config") / self.窗口名称 / "reward_tasks_config.json"
         if not 配置路径.exists():
-            self.保存配置()
+            self.保存配置(版本=强化奖励配置版本)
             return
         
         try:
             with open(配置路径, 'r', encoding='utf-8') as f:
                 数据 = json.load(f)
             
+            文件版本 = 数据.get("版本", "0")
             配置映射 = {t["任务ID"]: t for t in 数据.get("任务列表", [])}
             
-            for 实例 in self.任务实例列表:
-                if 实例.任务ID in 配置映射:
-                    配置 = 配置映射[实例.任务ID]
-                    for 字段名, 值 in 配置.items():
-                        if hasattr(实例, 字段名) and 字段名 != "任务ID":
-                            # 类型转换
-                            当前值 = getattr(实例, 字段名)
-                            if isinstance(当前值, bool):
-                                setattr(实例, 字段名, bool(值))
-                            elif isinstance(当前值, int):
-                                setattr(实例, 字段名, int(值))
-                            elif isinstance(当前值, float):
-                                setattr(实例, 字段名, float(值))
-                            else:
-                                setattr(实例, 字段名, 值)
+            if 文件版本 != 强化奖励配置版本:
+                # 版本更新：只保留 UI 字段
+                from ui.reward_task_defs import 强化奖励任务定义
+                for 实例 in self.任务实例列表:
+                    if 实例.任务ID in 配置映射:
+                        旧数据 = 配置映射[实例.任务ID]
+                        ui字段 = set(强化奖励任务定义.get(实例.任务名称, {}).keys())
+                        需要保留的字段 = ui字段 | {"上次确定任务结束时间", "下次执行时间", "在线奖励完成时间",
+                                          "本周已充值天数"}
+                        for 字段名 in 需要保留的字段:
+                            if 字段名 in 旧数据:
+                                self._设置属性(实例, 字段名, 旧数据[字段名])
+                
+                调试器.info("强化奖励", f"窗口 '{self.窗口名称}' 配置版本更新: v{文件版本} → v{强化奖励配置版本}")
+                self.保存配置(版本=强化奖励配置版本)
+            else:
+                for 实例 in self.任务实例列表:
+                    if 实例.任务ID in 配置映射:
+                        配置 = 配置映射[实例.任务ID]
+                        for 字段名, 值 in 配置.items():
+                            if hasattr(实例, 字段名) and 字段名 != "任务ID":
+                                self._设置属性(实例, 字段名, 值)
         except Exception as e:
             调试器.warning("强化奖励", f"加载配置失败: {e}")
-    
-    def 保存配置(self):
+    def _设置属性(self, 实例, 字段名, 值):
+        """类型转换后设置属性"""
+        当前值 = getattr(实例, 字段名)
+        if isinstance(当前值, bool):
+            setattr(实例, 字段名, bool(值))
+        elif isinstance(当前值, int):
+            setattr(实例, 字段名, int(值))
+        elif isinstance(当前值, float):
+            setattr(实例, 字段名, float(值))
+        else:
+            setattr(实例, 字段名, 值)
+    def 保存配置(self,版本:Optional[str] = None):
         """保存配置到文件"""
         配置路径 = Path("config") / self.窗口名称 / "reward_tasks_config.json"
         配置路径.parent.mkdir(parents=True, exist_ok=True)
         
+        if 版本 is None: 
+            版本 = 强化奖励配置版本
         数据 = {
-            "版本": "1.0",
+            "版本": 版本,
             "任务列表": []
         }
         # 不需要保存的开发属性

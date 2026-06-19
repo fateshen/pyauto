@@ -977,6 +977,20 @@ class 特殊活动(BaseModel):
     节日试炼积分奖励红点搜寻区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(607,236,994,678))
     灵符特惠购买按钮区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(650,605,749,639))
     灵符特惠礼包信息区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(655,464,695,484))
+    连充豪礼页面已充值金额区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(1030,309,1186,345))
+    每日累充页面领取宝箱按钮区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(649,612,789,662))
+    连充豪礼页面领取范围区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(1100,352,1198,674))
+    连充豪礼页面天数范围区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(850,348,907,669))
+    连充豪礼页面金额奖励区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(608,303,1005,343))
+    红包使用信息提示区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(744,348,927,388))
+    红包数量输入区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(794,396,882,427))
+    红包使用按钮区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(908,461,992,490))
+    红包取消按钮区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(700,459,780,490))
+    红包提示信息搜寻区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(780,400,900,530))
+
+
+    
+
 
 
 
@@ -986,6 +1000,7 @@ class 特殊活动(BaseModel):
 class 至尊联赛相关(BaseModel):
     """"""
     迷阵夺旗进入按钮区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(804,634,899,667))
+    迷阵夺旗世界赛程按钮区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(1262,326,1285,363))
     迷阵夺旗死亡问号校正区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(189,29,239,75))
     迷阵夺旗按钮翡翠荣耀旗: 区域坐标 = Field(default_factory=lambda: 区域坐标(59,177,87,188))
     迷阵夺旗按钮金岩霸者旗: 区域坐标 = Field(default_factory=lambda: 区域坐标(118,176,154,190))

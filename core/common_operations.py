@@ -127,18 +127,22 @@ class 通用操作集:
         调试器.debug("战斗助手", "未找到退出按钮")
         return False
     def 点击回城石(self) -> bool:
-        if self.页面.创建点击图片操作(
-            self.游戏配置.区域.主界面.下方技能按钮总区域标签.元组,
-            "回城石.bmp",
-            0.8,
-            0.5,
+        回城石区域=self.线程.辅助识别器.查找图片单结果(self.游戏配置.区域.主界面.下方技能按钮总区域标签.元组,"回城石.bmp")
+        if not 回城石区域: 
+            调试器.debug("战斗助手", "未找到回城石")
+            return False               
+        if self.页面.创建_通用点击区域验证文字切换(
+            回城石区域,
+            self.游戏配置.区域.主界面.小地图地图名显示标签.元组,
+            "盟重省",            
             按键="right"
         ).执行():
             调试器.state("战斗助手", "点击回城石")
             return True
+        self.点击区域(回城石区域,2,0.1)        
+        调试器.debug("战斗助手", "双击回城石点")
+        return True
         
-        调试器.debug("战斗助手", "未找到回城石")
-        return False
     def 按副本类型退出(self) -> bool:
         if 匹配分组关键字(self.线程.当前地图,"魔神禁|群星试|会试"): 
             time.sleep(0.3)
@@ -283,6 +287,15 @@ class 通用操作集:
         time.sleep(等待秒数)
     #======================= 背包操作 ======================
     def _打开背包(self,打开仓库:bool=False)->Optional[Tuple[int, int, int, int]]:
+        """
+        打开背包
+        
+        参数:
+            打开仓库: 是否打开仓库
+        返回:
+            成功: 仓库图标区域
+            失败: None
+        """
         仓库图标 = None
         for _ in range(2):
             self.线程.通用操作.点击区域(self.游戏配置.区域.主界面.背包按钮区域标签.元组)
@@ -344,7 +357,7 @@ class 通用操作集:
         图标Y = (仓库图标区域[1] + 仓库图标区域[3]) // 2
         
         # 第一个格子的左上角（图标左移11, 上移415）
-        基准X = 图标X + 11
+        基准X = 图标X -7
         基准Y = 图标Y - 415
         
         格子大小 = 64
@@ -384,25 +397,28 @@ class 通用操作集:
         
         return 标签列表
 
-    def 查找目标所在格子(self,目标区域: Tuple[int, int, int, int], 
-                      背包格子列表: List[Tuple[int, int, int, int]]) -> Optional[Tuple[int, int, int, int]]:
+    def 查找目标所在格子(self, 目标区域: Tuple[int, int, int, int], 
+                      背包格子列表: list) -> Tuple[Optional[Tuple[int, int, int, int]], Optional[int]]:
         """
         查找目标区域所在的背包格子
         
-        参数:
-            目标区域: (左, 上, 右, 下)
-            背包格子列表: 48个格子区域
-        
         返回:
-            包含目标区域的格子，未找到返回 None
+            (格子rect, 格子序号)，未找到返回 (None, None)
         """
         目标左, 目标上, 目标右, 目标下 = 目标区域
         
-        for 格子 in 背包格子列表:
+        for i, 格子 in enumerate(背包格子列表):
             格左, 格上, 格右, 格下 = 格子
             if 格左 <= 目标左 and 格上 <= 目标上 and 目标右 <= 格右 and 目标下 <= 格下:
-                return 格子
+                return 格子, i
+
+        # 目标左, 目标上, 目标右, 目标下 = 目标区域
+        # count=len(背包格子列表)
+        # for i in range(count):
+        #     格左, 格上, 格右, 格下 = 背包格子列表[i]
+        #     if 格左 <= 目标左 and 格上 <= 目标上 and 目标右 <= 格右 and 目标下 <= 格下:
+        #         return 背包格子列表[i],i
         
-        return None
-        
+        # # return None,None
+        return None, None
    

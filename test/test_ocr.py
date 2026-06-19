@@ -484,7 +484,7 @@ def test_ocr():
     print("=" * 60)
     
     # 窗口句柄
-    hwnd = 270906
+    hwnd = 69514
     # hwnd = 598454
     区域=区域配置.创建默认()
 
@@ -509,23 +509,24 @@ def test_ocr():
     模板匹配=TemplateMatcher()
     鼠标模拟器=ActionExecutor(hwnd)
     print("✅ 匹配开始")
-    自检区域=868,221,1393,620
-    匹配=模板匹配.match_bypicture(截图, "10元图标.bmp",0.5)
+    自检区域=295,223,817,617
+    匹配=模板匹配.match_bypicture(截图, "背包仓库图标.bmp",0.5)
     
     if 匹配:
 
         print(  f"匹配：{匹配}")
 
-    图片集合=("丹药1.bmp", "丹药2.bmp", "丹药3.bmp", "丹药4.bmp","丹药5.bmp", 
-              "丹药6.bmp",  "丹药7.bmp", "丹药8.bmp","丹药9.bmp", "丹药10.bmp","丹药11.bmp",
-             "宝箱1.bmp",  "宝箱2.bmp","宝箱3.bmp",  "宝箱4.bmp","宝箱5.bmp",  "宝箱6.bmp",
-             "宝箱7.bmp"             
-        )
-    time1=time.time()
-    所有区域=模板匹配.match_multiple_flat_bypictures(截图, 图片集合,0.9,自检区域)
-    print(time.time()-time1)
-    for 匹配1 in 所有区域:
-        print(  f"匹配x：{匹配1.rect}")
+    # 图片集合=("1元图标.bmp", "5元图标.bmp", "10元图标.bmp", "50元图标.bmp","100元图标.bmp", 
+                       
+    #            )
+    # time1=time.time()
+    # 所有区域=模板匹配.match_multiple_bypictures(截图, 图片集合,0.9,自检区域)
+    # print(time.time()-time1)
+    # for 图片 in 所有区域:
+    #     print(f"   图片：{图片}")
+    #     for 匹配1 in 所有区域[图片]:
+    #         print(f"   匹配：{匹配1.rect}")
+        
     # 鼠标模拟器.click(730,691,button="right")
     # time.sleep(0.01)
     # 鼠标模拟器.click(1149,576)
@@ -694,15 +695,120 @@ def 检查UMI运行() -> bool:
         return 'Umi-OCR.exe' in 结果.stdout
     except:
         return False
-
-
+def 计算红包分配(红包列表: List[Dict], 目标金额: int, 最大超出: int = 10) -> Optional[List[Dict]]:
+    """
+    计算红包分配，优先使用面额种类最少、超出最小的方案。
+    """
+    if not 红包列表:
+        return None
+    
+    排序列表 = sorted(红包列表, key=lambda x: x["金额"])
+    
+    最佳方案 = None
+    最佳种类数 = float('inf')
+    最佳超出 = float('inf')
+    
+    def 搜索(idx, 当前总额, 已选):
+        nonlocal 最佳方案, 最佳种类数, 最佳超出
+        
+        if 当前总额 >= 目标金额:
+            超出 = 当前总额 - 目标金额
+            if 超出 > 最大超出:
+                return
+            种类数 = len(set(i for i, _ in 已选))
+            if 种类数 < 最佳种类数 or (种类数 == 最佳种类数 and 超出 < 最佳超出):
+                最佳种类数 = 种类数
+                最佳超出 = 超出
+                最佳方案 = 已选.copy()
+            return
+        
+        if idx >= len(排序列表):
+            return
+        
+        红包 = 排序列表[idx]
+        # 最多用多少个（不超过数量，不无限加）
+        最大可用 = min(红包["数量"], (目标金额 - 当前总额) // 红包["金额"] + 1)
+        
+        for cnt in range(最大可用, -1, -1):
+            if cnt > 0:
+                已选.append((idx, cnt))
+            搜索(idx + 1, 当前总额 + cnt * 红包["金额"], 已选)
+            if cnt > 0:
+                已选.pop()
+    
+    搜索(0, 0, [])
+    
+    if 最佳方案 is None:
+        return None
+    
+    结果 = []
+    for idx, cnt in 最佳方案:
+        if cnt > 0:
+            结果.append({
+                "金额": 排序列表[idx]["金额"],
+                "使用数量": cnt,
+                "图标区域": 排序列表[idx]["图标区域"],
+                "格子序号": 排序列表[idx]["格子序号"],
+            })
+    
+    return 结果
+def 打印分配结果(分配列表, 目标金额: int):
+    """打印红包分配结果"""
+    if not 分配列表:
+        print(f"目标 {目标金额} 元 → 无法分配（超出超过限制或无可用红包）")
+        return
+    
+    总额 = sum(项["金额"] * 项["使用数量"] for 项 in 分配列表)
+    超出 = 总额 - 目标金额
+    
+    print(f"目标 {目标金额} 元 → 实际 {总额} 元（超出 {超出} 元）")
+    
+    # 按金额从大到小排列
+    for 项 in sorted(分配列表, key=lambda x: x["金额"], reverse=True):
+        print(f"  {项['金额']:>4}元 x {项['使用数量']:>2} = {项['金额'] * 项['使用数量']:>5}元  (格子 {项['格子序号']})")
+    
+    print(f"  {'─' * 12}")
+    print(f"  合计: {总额} 元  (超出 {超出} 元)")
 if __name__ == "__main__":
     # 运行基础测试
     # if  检查UMI运行():
     #     print("UMI-OCR 运行，请先运行 UMI-OCR.exe")
     #     exit(1)
     test_ocr()
-    
+
+    红包列表 = []
+    # 红包列表.append({
+    #                 "金额":1,
+    #                 "数量":1000,
+    #                 "图标区域": (100, 100, 100, 100),
+    #                 "格子序号": 1,
+    #             })
+    # 红包列表.append({
+    #                 "金额":5,
+    #                 "数量":20,
+    #                 "图标区域": (200, 200, 100, 100),
+    #                 "格子序号": 2,
+    #             })
+    # 红包列表.append({
+    #                 "金额":10,
+    #                 "数量":10,
+    #                 "图标区域": (500, 200, 100, 100),
+    #                 "格子序号": 3,
+    #             })
+    红包列表.append({
+                    "金额":50,
+                    "数量":20,
+                    "图标区域": (500, 200, 100, 100),
+                    "格子序号": 4,
+                })
+    红包列表.append({
+                    "金额":100,
+                    "数量":20,
+                    "图标区域": (500, 200, 100, 100),
+                    "格子序号": 5,
+                })
+    分配结果= 计算红包分配(红包列表, 165)
+    打印分配结果(分配结果, 165)
     # 可选：运行特定区域测试
     # test_特定区域列表()
     

@@ -2,9 +2,6 @@
 """
 炼器宝阁任务定义
 """
-from ast import Dict
-
-from rich.repr import T
 
 from tasks.base import 任务定义
 from core.task_executors.battle_executor import 战斗任务执行器
@@ -219,6 +216,7 @@ class 炼器宝阁任务(战斗任务执行器):
             self.任务状态.当前占领宝阁名字=self.辅助识别器.获取区域文字(self.游戏配置.区域.炼器宝阁.炼器宝阁主页面当前占领对象名称标签.元组)
         else:
             self.任务状态.当前占领宝阁名字=""
+        
         抢夺开启=self._抢夺开启()
         if 抢夺次数 is not None and 抢夺次数>0 and 抢夺开启 and time.time()-self.任务状态.上次抢夺失败时间>600:
            return self._执行抢夺(抢夺次数)
@@ -249,6 +247,9 @@ class 炼器宝阁任务(战斗任务执行器):
             if self.任务状态.当前占领状态:
                 self.任务状态.下次刷新时间=time.time()+self.任务配置.次数刷新间隔小时*3600              
             return  True
+        if not 匹配分组关键字(self.线程.当前地图,"盟重省"):
+              self.退出副本()
+              return False
         获取宝阁列表=self.辅助识别器.获取区域文字坐标(self.游戏配置.区域.合成.合成左分类卡区域标签.元组)
         if 获取宝阁列表 is None:
             return False
@@ -262,10 +263,10 @@ class 炼器宝阁任务(战斗任务执行器):
             return True
         
     
-    def _占领宝阁(self,宝阁名称)-> bool:
+    def _占领宝阁(self,宝阁名称)-> Optional [bool]:
         次数=self.拖动数量.get(宝阁名称)
         if 次数 is None:
-            return False
+            return None
         for i in range(次数):
             x,y= self.游戏配置.区域.炼器宝阁.炼器宝阁拖拽区域.随机点()
             if i==0:
@@ -294,7 +295,7 @@ class 炼器宝阁任务(战斗任务执行器):
                             ).执行():                                        
                                 return True
                         return False
-        return False
+        return None
 
     def _执行抢夺(self,抢夺次数)-> bool:
         抢夺对象=self.任务配置.抢夺宝阁
@@ -316,6 +317,10 @@ class 炼器宝阁任务(战斗任务执行器):
             if self.任务状态.当前占领状态:
                 self.任务状态.下次刷新时间=time.time()+self.任务配置.次数刷新间隔小时*3600
             return   True
+        if not 匹配分组关键字(self.线程.当前地图,"盟重省"):
+              self.退出副本()
+              return False
+                   
         获取宝阁列表=self.辅助识别器.获取区域文字坐标(self.游戏配置.区域.合成.合成左分类卡区域标签.元组)
         if 获取宝阁列表 is None:
             return False
