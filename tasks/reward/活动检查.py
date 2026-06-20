@@ -36,10 +36,26 @@ class 活动系列强化(强化奖励任务基类):
                 time.sleep(self.配置.默认等待秒*2)
                 self.页面.线程.刷新截图()
                 表头文字=self.辅助识别器.获取区域文字(self.配置.区域.主界面.中间页面名称区域标签.元组)
-                if 匹配分组关键字(表头文字,"祈|愿"):
+                if 匹配分组关键字(表头文字,"祈|愿|秘宝"):
                     左侧菜单=self.辅助识别器.获取区域文字坐标(self.配置.区域.合成.合成左分类卡区域标签.元组)
                     if 左侧菜单 is None:
                         continue
+                    福利BOSS按钮区域=左侧菜单.find("福利BOSS|利BOS")  
+                    if 福利BOSS按钮区域 is not  None:
+                        if  self.页面.创建_通用点击区域验证文字切换(
+                            福利BOSS按钮区域,
+                            self.配置.区域.各种活动.福利BOSS前往按钮区域.元组,
+                            "前往"
+
+                        ) .执行():                            
+                            if self.辅助识别器.查找图片单结果(self.配置.区域.各种活动.福利BOSS前往按钮区域.元组,"红点1.bmp"):
+                                福利BOSS状态=self.页面.线程.任务状态映射.get("福利BOSS")                                
+                                if 福利BOSS状态 is not None:
+                                    福利BOSS状态.剩余次数=1
+                                福利BOSS配置=self.页面.线程.获取任务配置("福利BOSS")
+                                if 福利BOSS配置 is not None:
+                                    福利BOSS配置.节日BOSS开启时间=time.time()
+
                     怪物试炼按钮区域=左侧菜单.find("怪物试炼")  
                     if 怪物试炼按钮区域 is not None:
                         if self.页面.创建_通用点击区域验证文字切换(

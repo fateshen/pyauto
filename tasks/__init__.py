@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import List, Dict, Any
 from core.debug import 调试器
 
-程序任务配置版本 = "1.1"
+程序任务配置版本 = "1.01"
 def 初始化任务系统():
     """手动初始化任务系统（需要在 main.py 中调用）"""
     return 自动发现并注册任务()

@@ -871,6 +871,7 @@ class 炼器宝阁相关配置(BaseModel):
     炼器宝阁拖拽区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(647,329,685,592))
     炼器宝阁战斗结果情况标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(676,394,1014,486))
     炼器宝阁被抢夺后进入确定提示区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(908,478,1002,509))
+    炼器宝阁被抢夺后冒号进入提示区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(743,386,959,424))
     
    
 
@@ -962,6 +963,7 @@ class 主界面配置(BaseModel):
     左上领取奖励区域标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(45, 123, 164, 152))
     讨伐页面领取奖励区域标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(844, 628, 928, 656))    
 
+    公共提示区域标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(509,570,710,668)) 
     背包按钮区域标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(1232,706,1250,719))    
     
     # 特殊退出
@@ -987,6 +989,7 @@ class 特殊活动(BaseModel):
     红包使用按钮区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(908,461,992,490))
     红包取消按钮区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(700,459,780,490))
     红包提示信息搜寻区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(780,400,900,530))
+    福利BOSS前往按钮区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(637,621,777,671))
 
 
     

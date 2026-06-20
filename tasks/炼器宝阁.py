@@ -119,7 +119,7 @@ def 获取当天21_15时间戳() -> float:
     任务名称="炼器宝阁",
     调试模式=True,
     任务类型="小时任务",
-    优先级=6,    
+    优先级=16,    
     地图关键字="炼器宝阁|宝阁守护", 
     工作时间开始=10,
     工作时间结束=22,
@@ -294,7 +294,7 @@ class 炼器宝阁任务(战斗任务执行器):
                                 "炼器|宝阁|守护"
                             ).执行():                                        
                                 return True
-                        return False
+                        
         return None
 
     def _执行抢夺(self,抢夺次数)-> bool:
@@ -372,8 +372,6 @@ class 炼器宝阁任务(战斗任务执行器):
                                             "炼器|宝阁|守护"
                                         ).执行():                                        
                                             return True
-
-                                    return False
         return False
          
     def 执行副本战斗逻辑(self) -> str:
