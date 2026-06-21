@@ -110,7 +110,7 @@ class 焚天禁地任务(战斗任务执行器):
                 "background": "black"
             }
         if not self.更新区域任务次数(self.游戏配置.区域.焚天炎域.焚天炎域禁地页面禁地次数标签.元组,filter_config):
-            调试器.warning(self.调试分类, "读取虚空剑界页面剩余次数失败，入口逻辑中断")
+            调试器.warning(self.调试分类, "读取焚天禁地页面剩余次数失败，入口逻辑中断")
             return False
                  
         # 4. 再次检查次数

@@ -326,7 +326,7 @@ class 战斗任务执行器(任务执行器基类):
         """
         自动战斗走位检查前置条件        
         """
-        return self.任务状态.下次刷新时间-2 < time.time()
+        return self.任务状态.下次刷新时间-5 <= time.time()
 
     def _古剑类副本勾子检查更新副本内剩余次数(self) ->  Optional[str]:
         #位置同古剑
@@ -375,7 +375,7 @@ class 战斗任务执行器(任务执行器基类):
         return False
         
 
-    def _策略_避让高战(self) -> bool:
+    def _策略_避让高战(self,杀手名:Optional[str]=None) -> bool:
         """
         执行高战避让策略
         
@@ -391,16 +391,19 @@ class 战斗任务执行器(任务执行器基类):
             启用高战避让=self.任务配置.启用高战避让模式 and 避让杀手名单!=""
             避让冷却=self.任务配置.避让冷却秒数
 
-        if 启用高战避让:    
+        if 启用高战避让:  
+            杀手=self.公共变量.死亡杀手名  
+            if 杀手名 is not None:
+                杀手=杀手名           
             避让名单 = self._解析名单(避让杀手名单)                        
-            if  避让名单 and self.公共变量.死亡杀手名  in 避让名单:
+            if  避让名单 and 杀手 in 避让名单:
                 当前子任务ID = getattr(self.任务状态, '当前子任务ID', "")
                 if 当前子任务ID != "":                    
                     self.任务状态.子任务刷新情况[当前子任务ID] = time.time() + 避让冷却
                     self.更新下一次刷新时间()
                 else:    
                     self.任务状态.下次刷新时间 = time.time() + 避让冷却
-                调试器.debug(self.调试分类, f"高战避让:杀手: {self.公共变量.死亡杀手名}")
+                调试器.debug(self.调试分类, f"高战避让:杀手: {杀手}")
                 return True
         return False
 
@@ -574,7 +577,7 @@ class 战斗任务执行器(任务执行器基类):
             杀手名 = self.辅助识别器.获取复活面板杀手名字()
             if 杀手名:
                 调试器.debug(self.调试分类, f"击杀者: {杀手名}")
-                已避让高战 = self._策略_避让高战()
+                已避让高战 = self._策略_避让高战(杀手名)
         
         #这一步是为了防止副本结束后，被人一直堵着杀
         if time.time()- self.线程.公共变量.任务可能结束时间<20:
@@ -1095,6 +1098,18 @@ class 战斗任务执行器(任务执行器基类):
         
         if 归属 == 归属情况.归属外人:
             self._点击抢归属按钮()
+            return True
+        
+        return False
+    def _执行抢归属动作宝库类副本(self) -> bool:
+        """抢归属动作"""
+        调试器.debug(self.调试分类, "执行抢归属动作")
+        
+        归属 = self.辅助识别器.宝库类副本归属判定()
+        调试器.debug(self.调试分类, f"归属判定: {归属}")
+        
+        if 归属 == 归属情况.归属外人:
+            self.通用操作.点击区域(self.游戏配置.区域.圣兽宝库.宝库深处页面抢归属按钮标签.元组)
             return True
         
         return False

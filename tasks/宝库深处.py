@@ -86,4 +86,8 @@ class 宝库深处任务(战斗任务执行器):
 
         调试器.state(self.调试分类, "入口逻辑执行成功，已进入宝库深处副本")
         return True
+    
+
+    def _执行抢怪操作(self) -> bool:
+        return self._执行抢归属动作宝库类副本()
    

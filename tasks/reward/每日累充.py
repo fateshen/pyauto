@@ -434,7 +434,7 @@ class 每日累充(强化奖励任务基类):
                         ).执行():                        
                             调试器.debug("红包", "使用红包成功")
                             break
-                    return True
+                    
         return True
 
 

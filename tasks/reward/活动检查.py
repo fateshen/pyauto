@@ -49,12 +49,17 @@ class 活动系列强化(强化奖励任务基类):
 
                         ) .执行():                            
                             if self.辅助识别器.查找图片单结果(self.配置.区域.各种活动.福利BOSS前往按钮区域.元组,"红点1.bmp"):
-                                福利BOSS状态=self.页面.线程.任务状态映射.get("福利BOSS")                                
+                                福利BOSS状态=self.页面.线程.获取任务状态_按名称("福利BOSS")                                                      
                                 if 福利BOSS状态 is not None:
+                                    调试器.debug("福利BOSS", "次数已更新")
                                     福利BOSS状态.剩余次数=1
                                 福利BOSS配置=self.页面.线程.获取任务配置("福利BOSS")
                                 if 福利BOSS配置 is not None:
                                     福利BOSS配置.节日BOSS开启时间=time.time()
+                                    调试器.error("福利BOSS", "开启时间已更新")
+                                    from tasks.base import 任务定义
+                                    任务定义.导出配置到JSON(self.页面.线程.窗口名称,线程=self.页面.线程)
+
 
                     怪物试炼按钮区域=左侧菜单.find("怪物试炼")  
                     if 怪物试炼按钮区域 is not None:

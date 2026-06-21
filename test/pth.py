@@ -94,7 +94,7 @@ if __name__ == "__main__":
     # 当前子任务队列 = [1, 2, 3, 4]
     # random.shuffle(当前子任务队列)
     # print(当前子任务队列)
-    name1="s225孤影剑1的跟班"
+    name1="归属a22。。孤影剑的跟班"
     xinx=解析玩家全名(name1)
     print(xinx)
     

@@ -9,6 +9,7 @@ from typing import Tuple,Optional, Dict, Any, List
 from pydantic import BaseModel, Field
 import threading
 from core.path_manager import path_mgr
+from tasks import 炼器宝阁
 
 # 线程局部存储（独立于Pydantic）
 _线程本地存储 = threading.local()
@@ -135,21 +136,21 @@ class 区域坐标(BaseModel):
     def 高(self) -> int:
         return self._缓存['高']
     
-    @property
-    def 原始左(self) -> int:
-        return self.原始左
+    # @property
+    # def 原始左(self) -> int:
+    #     return self.原始左
     
-    @property
-    def 原始上(self) -> int:
-        return self.原始上
+    # @property
+    # def 原始上(self) -> int:
+    #     return self.原始上
     
-    @property
-    def 原始右(self) -> int:
-        return self.原始右
+    # @property
+    # def 原始右(self) -> int:
+    #     return self.原始右
     
-    @property
-    def 原始下(self) -> int:
-        return self.原始下
+    # @property
+    # def 原始下(self) -> int:
+    #     return self.原始下
     
     @property
     def 是否有效(self) -> bool:
@@ -629,6 +630,8 @@ class 圣兽宝库相关配置(BaseModel):
     圣兽宝库页面积分奖励面板领取按钮区域标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(913, 281, 1003, 648))
     圣兽宝库页面深处刷新时间标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(667, 259, 776, 293))
     圣兽宝库页面深处挑战按钮标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(649, 594, 795, 643))
+    宝库深处页面抢归属按钮标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(88,153,184,182))
+    宝库深处页面归属玩家区域标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(55,101,214,138))
 
 
 # ==================== 虚空剑界相关配置 ====================
@@ -872,6 +875,7 @@ class 炼器宝阁相关配置(BaseModel):
     炼器宝阁战斗结果情况标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(676,394,1014,486))
     炼器宝阁被抢夺后进入确定提示区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(908,478,1002,509))
     炼器宝阁被抢夺后冒号进入提示区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(743,386,959,424))
+    炼器宝阁占领成功提示区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(807,479,893,507))
     
    
 
@@ -963,11 +967,23 @@ class 主界面配置(BaseModel):
     左上领取奖励区域标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(45, 123, 164, 152))
     讨伐页面领取奖励区域标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(844, 628, 928, 656))    
 
+    #公共区域提示指感叹号等
     公共提示区域标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(509,570,710,668)) 
-    背包按钮区域标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(1232,706,1250,719))    
+    背包按钮区域标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(1232,706,1250,719))
+    
+
+
     
     # 特殊退出
     魔神禁地退出确认区域标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(871, 458, 1050, 522))
+class 商店购买(BaseModel):
+    商店按钮区域标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(1270,773,1290,794))
+    商店标题按钮区域标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(474,231,1209,264))
+    商店页面货物名称查询区域标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(479,267,1201,543)) 
+    商店页面购买按钮标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(1066,637,1160,667))  
+    商店页面道具购买MAX按钮标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(916,460,946,476))
+    商店页面道具购买购买按钮: 区域坐标 = Field(default_factory=lambda: 区域坐标(792,545,877,574))
+
 class 特殊活动(BaseModel):
     """"""
     开服活动右侧小标签红点检查区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(1217,263,1253,614))
@@ -990,6 +1006,9 @@ class 特殊活动(BaseModel):
     红包取消按钮区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(700,459,780,490))
     红包提示信息搜寻区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(780,400,900,530))
     福利BOSS前往按钮区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(637,621,777,671))
+    抢红包界面红包出现范围: 区域坐标 = Field(default_factory=lambda: 区域坐标(796,242,987,669))
+    抢红包界面红包出现抢红包按钮区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(903,429,1037,554))
+    抢红包界面抢红包返回按钮: 区域坐标 = Field(default_factory=lambda: 区域坐标(936,569,1007,594))
 
 
     
@@ -1150,6 +1169,8 @@ class 区域配置(BaseModel):
     各种活动: 特殊活动 = Field(default_factory=特殊活动)
     # 至尊联赛
     至尊联赛: 至尊联赛相关 = Field(default_factory=至尊联赛相关)
+    # 商店购买
+    商店: 商店购买 = Field(default_factory=商店购买)
 
     首领合成页面右侧标签坐标池: 首领合成入口右侧标签坐标池 = Field(default_factory=首领合成入口右侧标签坐标池)    
     战场光翼图鉴页面右侧坐标池: 战场光翼图鉴页面右侧标签坐标池 = Field(default_factory=战场光翼图鉴页面右侧标签坐标池)
@@ -1163,9 +1184,23 @@ class 区域配置(BaseModel):
         """创建默认配置"""
         return cls()
     
+    # @classmethod
+    # def 从字典加载(cls, 数据: dict) -> '区域配置':
+    #     """从字典加载配置"""
+    #     def 转换区域(值):
+    #         if isinstance(值, dict) and all(k in 值 for k in ['左', '上', '右', '下']):
+    #             return 区域坐标(值['左'], 值['上'], 值['右'], 值['下'])
+    #         elif isinstance(值, dict):
+    #             return {k: 转换区域(v) for k, v in 值.items()}
+    #         elif isinstance(值, list):
+    #             return [转换区域(v) for v in 值]
+    #         return 值
+        
+    #     转换后数据 = {k: 转换区域(v) for k, v in 数据.items()}
+    #     return cls(**转换后数据)
+
     @classmethod
     def 从字典加载(cls, 数据: dict) -> '区域配置':
-        """从字典加载配置"""
         def 转换区域(值):
             if isinstance(值, dict) and all(k in 值 for k in ['左', '上', '右', '下']):
                 return 区域坐标(值['左'], 值['上'], 值['右'], 值['下'])
@@ -1176,7 +1211,18 @@ class 区域配置(BaseModel):
             return 值
         
         转换后数据 = {k: 转换区域(v) for k, v in 数据.items()}
-        return cls(**转换后数据)
+        
+        # 调试
+        if '炼器宝阁' in 转换后数据:
+            print(f"炼器宝阁类型: {type(转换后数据['炼器宝阁'])}")
+            print(f"炼器宝阁内容: {转换后数据['炼器宝阁']}")
+        
+        结果 = cls(**转换后数据)
+        
+        # 调试
+        print(f"加载后炼器宝阁类型: {type(结果.炼器宝阁)}")
+        
+        return 结果
     
     @classmethod
     def 从文件加载(cls, 文件名: str = "region_config.json") -> '区域配置':
@@ -1284,7 +1330,7 @@ if __name__ == "__main__":
     print(f"  神器位置.位置1: {配置.神器位置.位置1}")
     print(f"  boss相关.BOSS页面进入第一层位置: {配置.boss相关.BOSS页面进入第一层位置}")
     print(f"  降魔.降魔页面剩余次数区域标签: {配置.降魔.降魔页面剩余次数区域标签}")
-    配置.天关.天关扫荡页面扫荡按钮标签.元组
+    # 配置.天关.天关扫荡页面扫荡按钮标签.元组
     # 测试2：随机点
     print("\n[测试2] 随机点测试")
     随机点 = 配置.主界面.自动战斗按钮标签.随机点(0.8)
@@ -1300,37 +1346,37 @@ if __name__ == "__main__":
     print("\n[测试4] 保存配置")
     配置.保存到文件("region_config.json")
     
-    # 测试5：加载JSON
-    print("\n[测试5] 加载配置")
-    新配置 = 区域配置.从文件加载("region_config.json")
-    print(f"  加载后小地图地图名: {新配置.主界面.小地图地图名显示标签}")
+    # # 测试5：加载JSON
+    # print("\n[测试5] 加载配置")
+    # 新配置 = 区域配置.从文件加载("region_config.json")
+    # print(f"  加载后小地图地图名: {新配置.主界面.小地图地图名显示标签}")
     
-    # 测试6：重置偏移
-    print("\n[测试6] 重置偏移")
-    # 区域坐标.重置全局偏移()
-    新配置.应用全局偏移(0, 0)
-    print(f"  重置后小地图地图名: {新配置.主界面.小地图地图名显示标签}")
+    # # 测试6：重置偏移
+    # print("\n[测试6] 重置偏移")
+    # # 区域坐标.重置全局偏移()
+    # 新配置.应用全局偏移(0, 0)
+    # print(f"  重置后小地图地图名: {新配置.主界面.小地图地图名显示标签}")
     
-    # 测试7：打印所有区域
-    print("\n[测试7] 打印所有区域（仅显示前10个）")
-    print("  主界面配置项:")
-    for i, (键, 值) in enumerate(配置.主界面.__dict__.items()):
-        if i >= 10:
-            print(f"  ... 共 {len(配置.主界面.__dict__.items())} 项")
-            break
-        if not 键.startswith('_'):
-            print(f"    {键}: {值}")
+    # # 测试7：打印所有区域
+    # print("\n[测试7] 打印所有区域（仅显示前10个）")
+    # print("  主界面配置项:")
+    # for i, (键, 值) in enumerate(配置.主界面.__dict__.items()):
+    #     if i >= 10:
+    #         print(f"  ... 共 {len(配置.主界面.__dict__.items())} 项")
+    #         break
+    #     if not 键.startswith('_'):
+    #         print(f"    {键}: {值}")
     
-    print("\n[测试完成]")
-    print(f"  主界面.小地图地图名显示标签: {配置.主界面.小地图地图名显示标签}")
-    print(区域坐标.获取当前线程偏移())
-    配置 = 区域配置.从文件加载("region_config.json")
-    print(f"  加载后小地图地图名: {配置.诸神遗迹BOSS地图位置.位置1.元组}")
-    # print(区域配置.大千世界入口.大千世界页面五行洞天按钮标签.元组)
-    新配置.应用全局偏移(10, 20)
-    区域1=区域坐标(1,2,300,400)
-    区域2=区域坐标(300,400,1000,2000)
-    print(区域1.元组)
-    print(区域2)
+    # print("\n[测试完成]")
+    # print(f"  主界面.小地图地图名显示标签: {配置.主界面.小地图地图名显示标签}")
+    # print(区域坐标.获取当前线程偏移())
+    # 配置 = 区域配置.从文件加载("region_config.json")
+    # print(f"  加载后小地图地图名: {配置.诸神遗迹BOSS地图位置.位置1.元组}")
+    # # print(区域配置.大千世界入口.大千世界页面五行洞天按钮标签.元组)
+    # 新配置.应用全局偏移(10, 20)
+    # 区域1=区域坐标(1,2,300,400)
+    # 区域2=区域坐标(300,400,1000,2000)
+    # print(区域1.元组)
+    # print(区域2)
 
     

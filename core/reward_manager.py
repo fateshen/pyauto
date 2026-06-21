@@ -22,12 +22,18 @@ class 强化奖励管理器:
         self.辅助识别器 = 辅助识别器
         
         self.任务实例列表 = []
-        self.上次检查时间 = 0
+        self.上次检查时间 = time.time()+180
         self.检查间隔 = 30
         
         self._加载任务实例()
         self._加载配置()
-    
+        self._初始化首次执行时间()
+
+    def _初始化首次执行时间(self):
+        import random
+        for 实例 in self.任务实例列表:
+            if 实例.下次执行时间 == 0:
+                实例.下次执行时间 = time.time() + random.randint(180, 600)
     def _加载任务实例(self):
         from tasks.reward import 获取所有强化奖励任务类
         
