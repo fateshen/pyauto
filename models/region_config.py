@@ -1038,6 +1038,29 @@ class 焚天炎域页面(BaseModel):
     焚天炎域右侧禁地按钮标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(1228, 327, 1248, 368))
     焚天炎域禁地页面禁地次数标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(772, 637, 891, 667))
     焚天炎域禁地页面前往挑战标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(1042,624,1138,653))
+
+class 焚天禁地地图位置配置(BaseModel):
+    """诸神遗迹BOSS地图位置，喜怒哀乐泰坦"""
+    位置1: 区域坐标 = Field(default_factory=lambda: 区域坐标(620, 526, 632, 547))
+    位置2: 区域坐标 = Field(default_factory=lambda: 区域坐标(607, 337, 629, 354))
+    位置3: 区域坐标 = Field(default_factory=lambda: 区域坐标(915, 341, 938, 354))
+    位置4: 区域坐标 = Field(default_factory=lambda: 区域坐标(904, 518, 919, 535))
+    位置5: 区域坐标 = Field(default_factory=lambda: 区域坐标(757, 443, 782, 459))
+    
+    def 获取(self, 索引: int) -> Optional[区域坐标]:
+        return getattr(self, f"位置{索引}", None)
+    
+class 焚天禁地地图刷新时间区域配置(BaseModel):
+    """诸神遗迹BOSS地图位置，喜怒哀乐泰坦"""
+    位置1: 区域坐标 = Field(default_factory=lambda: 区域坐标(573,540,658,571))
+    位置2: 区域坐标 = Field(default_factory=lambda: 区域坐标(583,340,655,365))
+    位置3: 区域坐标 = Field(default_factory=lambda: 区域坐标(890,340,970,369))
+    位置4: 区域坐标 = Field(default_factory=lambda: 区域坐标(891,528,975,561))
+    位置5: 区域坐标 = Field(default_factory=lambda: 区域坐标(731,433,816,460))
+    
+    def 获取(self, 索引: int) -> Optional[区域坐标]:
+        return getattr(self, f"位置{索引}", None)
+
 class 首领合成入口右侧标签坐标池(BaseModel):
     """页面A的坐标池（5个可能的位置）"""
     位置1: 区域坐标 = Field(default_factory=lambda: 区域坐标(1226, 252, 1249, 300))
@@ -1163,6 +1186,10 @@ class 区域配置(BaseModel):
     陨圣: 陨圣相关配置 = Field(default_factory=陨圣相关配置)
     # 焚天炎域
     焚天炎域: 焚天炎域页面 = Field(default_factory=焚天炎域页面)
+    # 焚天禁地
+    焚天禁地地图位置: 焚天禁地地图位置配置 = Field(default_factory=焚天禁地地图位置配置)
+    # 焚天禁地
+    焚天禁地地图刷新时间区域: 焚天禁地地图刷新时间区域配置 = Field(default_factory=焚天禁地地图刷新时间区域配置)
     # 炼器宝阁
     炼器宝阁: 炼器宝阁相关配置 = Field(default_factory=炼器宝阁相关配置)
     # 特殊活动
