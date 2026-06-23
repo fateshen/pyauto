@@ -134,8 +134,8 @@ class 普通任务(战斗任务执行器):
         self._打印战斗状态()
         self._使用道具()
 
-        # from tasks.reward.商店购买 import 商店购买
-        # 每日=商店购买(self.线程.强化奖励管理器)
+        # from tasks.reward.合成系列 import 合成系列强化
+        # 每日=合成系列强化(self.线程.强化奖励管理器)
         # 每日.执行()
 
         # self.通用操作._打开背包()

@@ -727,7 +727,34 @@ def 是否有重叠(目标区域: Tuple[int, int, int, int], 匹配结果列表:
             if (目标_top <= r[1] <= 目标_bottom) or (目标_top <= r[3] <= 目标_bottom):
                  return True
     return False
-
+def 区域列表是否雷同(列表1: list[Tuple[int, int, int, int]], 列表2: list[Tuple[int, int, int, int]], 像素误差: int = 2) -> bool:
+    """
+    判断两组区域列表是否雷同。
+    条件：数量相同，且每个区域都能在对方列表中找到对应误差范围内的匹配。
+    """
+    if len(列表1) != len(列表2):
+        return False
+    
+    if len(列表1) == 0:
+        return True
+    
+    未匹配2 = list(range(len(列表2)))
+    
+    for r1 in 列表1:
+        找到 = False
+        for j in 未匹配2:
+            r2 = 列表2[j]
+            if (abs(r1[0] - r2[0]) <= 像素误差 and
+                abs(r1[1] - r2[1]) <= 像素误差 and
+                abs(r1[2] - r2[2]) <= 像素误差 and
+                abs(r1[3] - r2[3]) <= 像素误差):
+                未匹配2.remove(j)
+                找到 = True
+                break
+        if not 找到:
+            return False
+    
+    return True
 # ==================== 等待函数 ====================
 def 等待毫秒(毫秒: int):
     """等待指定毫秒"""

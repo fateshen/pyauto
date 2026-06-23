@@ -987,12 +987,20 @@ class 商店购买(BaseModel):
 class 特殊活动(BaseModel):
     """"""
     开服活动右侧小标签红点检查区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(1217,263,1253,614))
-    怪物试炼活动倒计时文字区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(987,304,1082,338))
+    怪物试炼活动倒计时文字区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(950,304,1082,338))
     怪物试炼活动领取奖励按钮区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(1069,348,1174,380))
     左上角活动检查区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(341,143,481,198))
     节日福利领取奖励按钮区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(1072,348,1171,380))
-    节日试炼积分领取按钮区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(1126,297,1211,330))
+    节日试炼积分领取按钮区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(1126,297,1211,330))    
     节日试炼积分奖励红点搜寻区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(607,236,994,678))
+    
+    节日试炼五天模式第三天文字区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(825,365,899,390))
+    节日试炼五天模式五天标题区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(608,355,1114,397))
+    节日试炼五天模式领取每日奖励区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(1131,410,1191,675))
+    节日试炼五天模式领取每周奖励区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(656,222,1168,321))
+    节日犒赏领取区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(873,383,1194,664))
+
+
     灵符特惠购买按钮区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(650,605,749,639))
     灵符特惠礼包信息区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(655,464,695,484))
     连充豪礼页面已充值金额区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(1030,309,1186,345))

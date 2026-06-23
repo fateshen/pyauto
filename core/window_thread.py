@@ -1157,8 +1157,6 @@ class 窗口线程(threading.Thread):
         """重置相关任务次数为1"""
         需要重置的任务ID列表 = [
             "zhuzaizhanchang",
-            "yuyanshengdian", 
-            "shiluoshengdian",
             "shenjiezhidian"
         ]
         

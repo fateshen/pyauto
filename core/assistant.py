@@ -567,8 +567,7 @@ class 战斗辅助识别器:
             return None
         
         # 尝试找图
-        复活图片路径 = "安全复活.bmp" if safe else "原地复活.bmp"
-        
+        复活图片路径 = "安全复活.bmp" if safe else "原地复活.bmp"        
         模板 = 读取图片(复活图片路径)
         if 模板 is not None:
             区域 = 复活区域.元组
