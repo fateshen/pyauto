@@ -29,7 +29,8 @@ from pydantic import Field
     优先级=16,
     执行日期规则="星期1,3,5",
     工作时间段列表="20:00-20:16",
-
+    
+    异界我已组好队并是队员=False,
     异界作为队长=False,
     异界队友名单="",
     异界等级范围="1,2,3,4",
@@ -42,6 +43,7 @@ from pydantic import Field
     状态_异界组队完成=False,
     状态_报名开始时间=0,
     状态_队友名字=[],
+    状态_报名页面=0,
 )
 class 异界夺宝任务(战斗任务执行器):
     """异界夺宝任务执行器"""
@@ -67,11 +69,7 @@ class 异界夺宝任务(战斗任务执行器):
         调试器.info(self.调试分类, f"开始执行: {self.任务配置.任务名称}({self.任务配置.任务ID})")
         调试器.debug(self.调试分类, f"当前地图: {self.线程.当前地图}")
         
-         # 0. 检查召唤响应（副本内外均可）
-        if self._检查召唤响应():            
-            return "完成"
-
-
+        
         # 1. 判断是否在副本中
         if self.是否在副本中():
             调试器.debug(self.调试分类, "判定在副本中，执行战斗逻辑")
@@ -91,12 +89,13 @@ class 异界夺宝任务(战斗任务执行器):
             
             self.通用操作.覆盖鼠标提示到边缘()
             self.通用操作.关闭中间可能存在的窗口()  
-         
+            self._等待中借调普通任务()
             return "失败"        
         self.通用操作.关闭中间可能存在的窗口()
         调试器.state(self.调试分类, "已进入副本，开始战斗")
         self.任务状态.记录入口成功()
         self.任务状态.重置位置复查()
+        self._等待中借调普通任务()
         return "进行中"
     
     def 执行入口逻辑(self) -> bool:
@@ -105,13 +104,25 @@ class 异界夺宝任务(战斗任务执行器):
         
         # 1. 判断是否报名期
         轮次 = self._计算当前轮次()
-        print(轮次)
+       
         if 轮次 == 0:
             self._活动结束重置()
             return False
-        
+
         self.任务状态.异界当前轮次 = 轮次
         调试器.debug(self.调试分类, f"当前第{轮次}轮报名期")
+
+        if 轮次>0 and self.任务配置.异界我已组好队并是队员:
+            调试器.debug(self.调试分类, "已组队，等待队长操作")            
+            return True
+        
+        if 轮次>0:
+            #5秒进入检查一次
+            当前时间 = time.time()
+            if 当前时间 - self.任务状态.异界上次复查时间 < 5:
+                return True
+            
+            self.任务状态.异界上次复查时间 = 当前时间
         
         # 2. 打开报名界面
         if not self._打开报名界面():
@@ -121,7 +132,7 @@ class 异界夺宝任务(战斗任务执行器):
         if 轮次 < 0:
             调试器.debug(self.调试分类, f"当前第{-轮次}轮进场期")
             if self._点击进入异界副本():
-                return None
+                return True
             return False
 
         # 3. 已报名 → 复查
@@ -129,7 +140,7 @@ class 异界夺宝任务(战斗任务执行器):
             if self._复查报名状态():
                 return True
             self._重置报名状态()
-        
+
         # 4. 组队阶段（前30秒）
         是否前30秒 = time.time() - self.任务状态.报名开始时间 < 30
         
@@ -139,12 +150,6 @@ class 异界夺宝任务(战斗任务执行器):
             else:
                 self._队员组队()
             return True
-        
-
-        #此部分逻辑存在问题，强制设置组队完成，会导致队员不能正确判断自己也要组队报名的行为
-        # if not 是否前30秒 and not self.任务状态.异界组队完成:
-        #     self.任务状态.异界组队完成 = True
-        #     调试器.debug(self.调试分类, "组队阶段结束（超时）")
         
         # 5. 队员组队成功后不需要报名，等队长操作
         if not self.任务配置.异界作为队长 and self.任务状态.异界组队完成:
@@ -403,28 +408,54 @@ class 异界夺宝任务(战斗任务执行器):
         
         等级列表 = self._解析等级范围()
         调试器.debug(self.调试分类, f"报名等级范围: {等级列表}")
+        if self.任务状态.报名页面==1:
+            time.sleep(self.游戏配置.刷新等待秒)
+            self.线程.刷新截图()
+            self.通用操作.关闭中间可能存在的窗口()
+            if not self._打开报名界面():return False
         
-        for 等级 in 等级列表:
-            self._关闭报名页()
-            图标路径 = f"{等级}级异界.bmp"
-            图标位置列表 = self._识别图标所有位置(图标路径)
-            
-            if not 图标位置列表:
-                调试器.trace(self.调试分类, f"未找到{等级}级异界图标")
-                continue
-            
-            for 图标位置 in 图标位置列表:
-                #防止报名页遮蔽
+        for 等级 in 等级列表:  
+            序号=1
+            if 等级>2: 序号=2         
+            for i in range(序号):
                 self._关闭报名页()
-
-                if not self._指定区域打开报名页(图标位置):
+                图标路径 = f"{等级}级异界.bmp"
+                图标位置列表 = self._识别图标所有位置(图标路径)
+                
+                if not 图标位置列表:
+                    调试器.trace(self.调试分类, f"未找到{等级}级异界图标")
                     continue
                 
-                if self._验证报名按钮为已报名():
-                    self._记录报名位置(等级, 图标位置)
-                    调试器.state(self.调试分类, f"报名成功: {等级}级")
-                    return True
-        
+                for 图标位置 in 图标位置列表:
+                    #防止报名页遮蔽
+                    self._关闭报名页()
+
+                    if not self._指定区域打开报名页(图标位置):
+                        continue
+                    
+                    if self._验证报名按钮为已报名():
+                        self._记录报名位置(等级, 图标位置,i)
+                        调试器.state(self.调试分类, f"报名成功: {等级}级")
+                        return True
+                #1、2级别不需要翻页
+                if i==0 and 等级>2:
+                    x,y =self.游戏配置.区域.合成.合成左分类卡区域标签.随机点(0.5)
+                    self.线程.动作执行器.drag(x,y,x,y+300)
+                    time.sleep(0.5)
+                    self.线程.刷新截图()
+                    if self.辅助识别器.查找图片单结果(
+                        self.游戏配置.区域.异界夺宝.报名标记查找区域标签.元组,
+                        "特征2.bmp"
+                    ):
+                        break
+            #3级检查完成，同时需要检查4级，重新打开
+            if 等级==3 and 4 in 等级列表:
+                time.sleep(self.游戏配置.刷新等待秒)
+                self.线程.刷新截图()
+                self.通用操作.关闭中间可能存在的窗口()
+                if not self._打开报名界面(): break
+
+
         调试器.warning(self.调试分类, "所有等级均报名失败")
         return False
     
@@ -437,12 +468,21 @@ class 异界夺宝任务(战斗任务执行器):
 
     # ==================== 复查 ====================
     
-    def _复查报名状态(self) -> bool:
-        当前时间 = time.time()
-        if 当前时间 - self.任务状态.异界上次复查时间 < 10:
-            return True
-        
-        self.任务状态.异界上次复查时间 = 当前时间
+    def _复查报名状态(self) -> bool:   
+        if self.任务状态.报名页面==1:
+            正确打开页面=False
+            for _ in range(2):               
+                x,y =self.游戏配置.区域.合成.合成左分类卡区域标签.随机点(0.5)
+                self.线程.动作执行器.drag(x,y,x,y+300)
+                time.sleep(0.5)
+                self.线程.刷新截图()
+                if not self.辅助识别器.查找图片单结果(
+                    self.游戏配置.区域.异界夺宝.报名标记查找区域标签.元组,
+                    "特征2.bmp"
+                ):
+                    正确打开页面=True
+                    break
+            if not 正确打开页面: return False
         
         if self._检测报名记号():
             调试器.trace(self.调试分类, "复查: 报名记号存在")
@@ -489,8 +529,9 @@ class 异界夺宝任务(战斗任务执行器):
     
     # ==================== 位置记录 ====================
     
-    def _记录报名位置(self, 等级: int, 图标位置: Tuple[int, int, int, int]):
+    def _记录报名位置(self, 等级: int, 图标位置: Tuple[int, int, int, int],报名页:int):
         self.任务状态.异界报名等级 = 等级
+        self.任务状态.报名页面 = 报名页
         
         for 特征名, 偏移属性 in [
             ("特征1", "异界报名图标相对特征1位置"),
@@ -512,16 +553,19 @@ class 异界夺宝任务(战斗任务执行器):
     def _重置报名状态(self):
         self.任务状态.异界是否已报名 = False
         self.任务状态.异界报名等级 = 0
+        self.任务状态.报名页面=0
         self.任务状态.异界报名图标相对特征1位置 = []
         self.任务状态.异界报名图标相对特征2位置 = []
     
     # ==================== 识别方法 ====================
-    
+       
     def _解析等级范围(self) -> List[int]:
         范围字符串 = self.任务配置.异界等级范围
         if not 范围字符串:
             return [1, 2, 3, 4]
-        return [int(x.strip()) for x in 范围字符串.split(',') if x.strip() and x.strip().isdigit()]
+        结果 = [int(x.strip()) for x in 范围字符串.split(',') if x.strip() and x.strip().isdigit()]
+        结果.sort()
+        return 结果
     
     def _检测报名记号(self) -> bool:
         截图 = self.线程.截图
@@ -561,6 +605,10 @@ class 异界夺宝任务(战斗任务执行器):
             return False
         文字 = self.线程.文字识别器.recognize_text(截图, 区域.元组)
         调试器.trace(self.调试分类, f"报名按钮文字: '{文字}'")
+        if 文字=="报名":
+            self.通用操作.点击区域(区域.元组)
+            return True
+
         return 匹配分组关键字(文字 or "", "已|己")
     
     def _查找特征图标(self, 特征名: str) -> Optional[Tuple[int, int, int, int]]:

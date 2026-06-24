@@ -658,7 +658,7 @@ class 决战盟重相关配置(BaseModel):
     决战盟重页面准备按键左边按钮标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(611, 576, 704, 606))
     决战盟重页面挑战次数区域标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(764, 538, 924, 576))
     决战盟重页面玩家准备情况标签1: 区域坐标 = Field(default_factory=lambda: 区域坐标(595, 542, 720, 568))
-    决战盟重页面玩家准备情况标签2: 区域坐标 = Field(default_factory=lambda: 区域坐标(792, 509, 903, 543))
+    决战盟重页面玩家准备情况标签2: 区域坐标 = Field(default_factory=lambda: 区域坐标(816,517,887,539))
     决战盟重页面玩家准备情况标签3: 区域坐标 = Field(default_factory=lambda: 区域坐标(981, 545, 1103, 569))
     决战盟重页面AI确定按钮标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(910, 480, 998, 508))
 
@@ -1046,14 +1046,15 @@ class 焚天炎域页面(BaseModel):
     焚天炎域右侧禁地按钮标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(1228, 327, 1248, 368))
     焚天炎域禁地页面禁地次数标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(772, 637, 891, 667))
     焚天炎域禁地页面前往挑战标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(1042,624,1138,653))
+    焚天禁地中间地图检索范围: 区域坐标 = Field(default_factory=lambda: 区域坐标(471,226,1072,665))
 
 class 焚天禁地地图位置配置(BaseModel):
     """诸神遗迹BOSS地图位置，喜怒哀乐泰坦"""
-    位置1: 区域坐标 = Field(default_factory=lambda: 区域坐标(620, 526, 632, 547))
-    位置2: 区域坐标 = Field(default_factory=lambda: 区域坐标(607, 337, 629, 354))
-    位置3: 区域坐标 = Field(default_factory=lambda: 区域坐标(915, 341, 938, 354))
-    位置4: 区域坐标 = Field(default_factory=lambda: 区域坐标(904, 518, 919, 535))
-    位置5: 区域坐标 = Field(default_factory=lambda: 区域坐标(757, 443, 782, 459))
+    位置1: 区域坐标 = Field(default_factory=lambda: 区域坐标(525,303,578,348))
+    位置2: 区域坐标 = Field(default_factory=lambda: 区域坐标(818,254,869,298))
+    位置3: 区域坐标 = Field(default_factory=lambda: 区域坐标(506,496,565,546))
+    位置4: 区域坐标 = Field(default_factory=lambda: 区域坐标(769,557,834,613))
+    位置5: 区域坐标 = Field(default_factory=lambda: 区域坐标(967,408,1026,465))
     
     def 获取(self, 索引: int) -> Optional[区域坐标]:
         return getattr(self, f"位置{索引}", None)
