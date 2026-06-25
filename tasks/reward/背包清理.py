@@ -4,6 +4,7 @@
 from tasks.reward.base import 强化奖励任务基类
 from core.debug import 调试器
 import time,random
+from core.path_manager import find_image
 
 class 背包清理(强化奖励任务基类):
     任务ID = "beibaoqingli"
@@ -23,11 +24,13 @@ class 背包清理(强化奖励任务基类):
             return True
         格子坐标集合=self.通用操作._生成背包格子区域(定位坐标)
         分页按钮标签=self.通用操作._生成背包翻页标签区域(定位坐标)
-        图片集合=("丹药1.bmp", "丹药2.bmp", "丹药3.bmp", "丹药4.bmp","丹药5.bmp", 
-              "丹药6.bmp",  "丹药7.bmp", "丹药8.bmp","丹药9.bmp", "丹药10.bmp","丹药11.bmp",
-             "宝箱1.bmp",  "宝箱2.bmp","宝箱3.bmp",  "宝箱4.bmp","宝箱5.bmp",  "宝箱6.bmp",
-             "宝箱7.bmp",  "宝箱8.bmp"           
-        )
+        图片集合 = []
+        for name in ["丹药", "宝箱"]:
+            for i in range(1, 30):
+                文件名 = f"{name}{i}.bmp"
+                if not find_image(文件名): 
+                    break
+                图片集合.append(文件名)
         背包区域=定位坐标[0]+11,定位坐标[1]-400,定位坐标[0]+523,定位坐标[1]-16
         右键不可用=False
         检查1次=False

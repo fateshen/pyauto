@@ -589,7 +589,7 @@ def test_ocr():
     # 地图结果 = 识别器.recognize_text(截图, region=地图区域)
     # print(f"   地图名称识别: '{地图结果}'")
     
-    info=区域.决战盟重.决战盟重页面玩家准备情况标签2.元组
+    info=区域.主宰.主宰归属玩家检查区域.元组
     # print(info)
    
     # info = 缩放区域(info, 1.2)

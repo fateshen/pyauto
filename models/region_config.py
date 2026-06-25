@@ -418,7 +418,8 @@ class 主宰相关配置(BaseModel):
     主宰副本小地图BOSS刷新情况标签3: 区域坐标 = Field(default_factory=lambda: 区域坐标(864,411,936,438))
     主宰副本小地图BOSS刷新情况标签4: 区域坐标 = Field(default_factory=lambda: 区域坐标(664,526,728,554))
     主宰副本小地图BOSS刷新情况标签5: 区域坐标 = Field(default_factory=lambda: 区域坐标(819,527,890,559))
-    主宰归属检查区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(27, 124, 258, 182))
+    主宰归属玩家检查区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(44,134,238,159))
+    主宰归属行会检查区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(63,155,218,182))
     主宰BOSS血量显示区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(117, 116, 159, 139))
     主宰抢归属按钮区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(97, 184, 178, 211))
 

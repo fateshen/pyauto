@@ -134,8 +134,8 @@ class 普通任务(战斗任务执行器):
         self._打印战斗状态()
         self._使用道具()
 
-        # from tasks.reward.合成系列 import 合成系列强化
-        # 每日=合成系列强化(self.线程.强化奖励管理器)
+        # from tasks.reward.活动检查 import 活动系列强化
+        # 每日=活动系列强化(self.线程.强化奖励管理器)
         # 每日.执行()
 
         # self.通用操作._打开背包()
@@ -554,7 +554,7 @@ class 普通任务(战斗任务执行器):
     def _使用道具(self):
         调试器.debug(self.调试分类, "使用道具")
         if self.下一次使用道具时间 < time.time():
-            self.下一次使用道具时间 = time.time()+random.uniform(1800, 6000)
+            self.下一次使用道具时间 = time.time()+random.uniform(1800, 3600)
             for _  in range(5):
                 if self.辅助识别器.区域包含文字(self.游戏配置.区域.日常强化.使用道具小卡使用按钮标签1.元组,"使|用"):
                     self.通用操作.点击区域(self.游戏配置.区域.日常强化.使用道具小卡使用按钮标签1.元组,缩放比例=0.5)
