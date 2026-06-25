@@ -1122,6 +1122,18 @@ class 战斗任务执行器(任务执行器基类):
             return True
         
         return False
+    def _执行抢归属动作主宰类副本(self) -> bool:
+        """抢归属动作"""
+        调试器.debug(self.调试分类, "执行抢归属动作")
+        
+        归属 = self.辅助识别器.主宰类副本归属判定()
+        调试器.debug(self.调试分类, f"归属判定: {归属}")
+        
+        if 归属 == 归属情况.归属外人:
+            self.通用操作.点击区域(self.游戏配置.区域.主宰.主宰抢归属按钮区域.元组)
+            return True
+        
+        return False
 
 
     def _更新死亡预计时间(self):

@@ -4,6 +4,9 @@
 """
 
 import random
+import re
+
+from rich.repr import T
 
 from tasks.base import 任务定义
 from core.task_executors.battle_executor import 战斗任务执行器
@@ -409,3 +412,50 @@ class 主宰战场任务(战斗任务执行器):
             if time.time() - self.任务状态.上次点击摇人按钮时间 > 61:
                 if self.页面.创建点击图片操作(self.游戏配置.区域.主界面.摇人按钮区域标签.元组,"召集按钮.bmp"):
                     self.任务状态.上次点击摇人按钮时间 = time.time()
+
+    
+    #===========================抢怪相关方法===========================
+    def _执行抢怪操作(self) -> bool:
+        return self._执行抢归属动作主宰类副本()
+
+    def _是否抢怪阶段(self) -> bool:
+        """
+        判断是否进入抢怪阶段
+        
+        条件：
+        - 启用抢怪模式
+        - 有目标（能估算死亡时间）
+        - 预计死亡时间 < 抢怪触发秒数
+        
+        返回:
+            True: 抢怪阶段
+
+            =================需要补充，一旦抢怪开始，本任务30秒内不改变抢怪模式
+        """
+        if not self.任务配置.启用抢怪模式:            
+            return False
+        filter_config = {              
+                "color_diff": "8-80,255,80,255,80,255",
+                "keep_color": True,
+                "background": "black"
+            }
+        血量文字=self.辅助识别器.获取区域文字(self.游戏配置.区域.主宰.主宰BOSS血量显示区域.元组,filter_config)
+        血量=提取次数(血量文字)
+        if 血量<=100 and 血量>0:
+            self.公共变量.记录最小血量=血量
+            if self.公共变量.记录最小血量<=self.任务配置.低于此血量抢怪:
+                self.公共变量.抢怪开始=True
+            else:
+                self.公共变量.抢怪开始=False
+        return self.公共变量.抢怪开始        
+    
+
+    #此策略永远在此本不可用
+    def _策略_回城回血(self) -> bool:
+        return False
+    def _策略_高频死亡避让(self):
+        return False
+    def _是否启用高战避让(self):
+        return False
+
+       
