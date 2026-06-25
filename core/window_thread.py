@@ -733,7 +733,9 @@ class 窗口线程(threading.Thread):
         #       调试器.info("线程",f"{任务.任务名称}: 地图关键字='{任务.地图关键字}'")
         while not self._停止标志:
             if not self._检查窗口有效性():
-                break
+                if not self._重新获取窗口句柄():
+                    调试器.error("线程", "刷新游戏，窗口句柄获取失败，停止线程")   
+                    break
             循环计数 += 1
             # 1. 刷新截图,放暂停前，主要是处理消息发送。用轻微性能去处理消息
             if self.刷新截图() is None:
@@ -1093,8 +1095,7 @@ class 窗口线程(threading.Thread):
         time.sleep(2)
         # ===== 重新获取窗口句柄 =====
         if not self._重新获取窗口句柄():
-            调试器.error("线程", "窗口句柄获取失败，停止线程")
-            前台锁.释放(self.窗口名称)
+            调试器.error("线程", "刷新游戏，窗口句柄获取失败，停止线程")          
             self._停止标志 = True
             return
 
