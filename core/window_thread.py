@@ -204,6 +204,9 @@ class 窗口线程(threading.Thread):
             调试器.state("线程", f"窗口句柄更新: {self.窗口句柄} → {新句柄}")
             self.窗口句柄 = 新句柄
             self.动作执行器.hwnd = 新句柄
+            self.动作执行器._mouse = None      
+            self.动作执行器._bg_keyboard = None
+            self.动作执行器._fg_keyboard = None
         
         return True 
     def 暂停(self):
