@@ -933,7 +933,7 @@ class 窗口线程(threading.Thread):
                 return  self._根据复查情况选择刷新路径(复查情况)
         
         # ===== 检测4: 无地图识别 =====
-        if self.当前地图 == "" and time.time()- self.最后成功获取地图时间 > 25:
+        if time.time()- self.最后成功获取地图时间 > 25:
             复查情况=self._复核_检查主宰页面是否掉线()
             if 复查情况 is False:
                 调试器.trace("卡死检测", "无地图复核通过，未卡死")                
