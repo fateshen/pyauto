@@ -194,8 +194,9 @@ class 窗口线程(threading.Thread):
         if not 子窗口列表:
             调试器.error("线程", "未找到游戏子窗口")
             return False
-        if 匹配分组关键字( win32gui.GetWindowText(self.父窗口句柄),游戏标题):
-            调试器.error("线程", "父窗口不是游戏窗口")
+        父窗口标题 = win32gui.GetWindowText(self.父窗口句柄)
+        if 匹配分组关键字( 父窗口标题,游戏标题):
+            调试器.error("线程", f"父窗口不是游戏窗口，父窗口：{self.父窗口句柄}，父窗口标题：{父窗口标题}")
             return False
         新句柄 = 子窗口列表[0]
         
