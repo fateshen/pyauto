@@ -184,7 +184,7 @@ class 窗口线程(threading.Thread):
         def 枚举子窗口(hwnd, 结果):
             if win32gui.IsWindowVisible(hwnd):
                 标题 = win32gui.GetWindowText(hwnd)
-                if 匹配分组关键字( 标题,游戏标题):
+                if 匹配分组关键字( 标题,"Chrome|Legacy Window"):
                     结果.append(hwnd)
             return True
         
@@ -194,7 +194,9 @@ class 窗口线程(threading.Thread):
         if not 子窗口列表:
             调试器.error("线程", "未找到游戏子窗口")
             return False
-        
+        if 匹配分组关键字( win32gui.GetWindowText(self.父窗口句柄),游戏标题):
+            调试器.error("线程", "父窗口不是游戏窗口")
+            return False
         新句柄 = 子窗口列表[0]
         
         if 新句柄 != self.窗口句柄:

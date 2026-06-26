@@ -438,7 +438,7 @@ class 焚天禁地任务(战斗任务执行器):
                 continue
             区域坐标 = 区域对象.元组
             新区域=缩放区域(区域坐标, 2.5)
-            if self.辅助识别器.查找图片单结果(新区域, "boss标记.bmp"):   
+            if not self.辅助识别器.查找图片单结果(新区域, "boss标记.bmp"):   
                 调试器.debug(self.调试分类, f"焚天禁地boss[{index}]:已击杀")
                 self.任务状态.子任务刷新情况[str(index)] = time.time() + 6000
             else:
@@ -448,6 +448,7 @@ class 焚天禁地任务(战斗任务执行器):
             BOSS图标查询=self.辅助识别器.查找图片单结果(self.游戏配置.区域.焚天炎域.焚天禁地中间地图检索范围.元组,"boss标记.bmp")
             if BOSS图标查询 is None:
                 调试器.debug(self.调试分类, "位置复查: 无已刷新任务，且没有BOSS图标，退出副本")
+                self.任务状态.剩余次数=0
                 self.退出副本()
                 return "无新任务，退出副本"
             else:

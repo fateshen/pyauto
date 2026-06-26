@@ -485,7 +485,7 @@ def test_ocr():
     
     # 窗口句柄
     hwnd = 1123716
-    # hwnd = 598454
+    # hwnd = 12078430
     区域=区域配置.创建默认()
     # 区域.保存到文件("region_config.json")
     # 1. 截图
@@ -509,12 +509,13 @@ def test_ocr():
     模板匹配=TemplateMatcher()
     鼠标模拟器=ActionExecutor(hwnd)
     print("✅ 匹配开始")
-    自检区域=295,223,817,617
-    匹配=模板匹配.match_bypicture(截图, "背包仓库图标.bmp",0.5)
+    自检区域=464,220,1208,605
+    匹配=模板匹配.match_bypicture(截图, "异界报名标记.bmp",0.60,自检区域)
     
     if 匹配:
 
         print(  f"匹配：{匹配}")
+    print(  f"匹配：")
 
     # 图片集合=("1元图标.bmp", "5元图标.bmp", "10元图标.bmp", "50元图标.bmp","100元图标.bmp", 
                        

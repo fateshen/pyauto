@@ -61,6 +61,39 @@ def _去除所有符号(文字: str) -> str:
 def main():
      print("\n" + "=" * 60)
 
+
+import win32gui
+
+def 获取并打印子窗口(父窗口句柄: int):
+    """
+    获取并打印父窗口的所有子窗口句柄
+    
+    参数:
+        父窗口句柄: 目标窗口的句柄
+    """
+    if 父窗口句柄 == 0:
+        print("❌ 父窗口句柄无效")
+        return
+    
+    子窗口列表 = []
+
+    def 枚举回调(子句柄, 额外参数):
+        子窗口列表.append(子句柄)
+        return True  # 继续枚举
+
+    # 枚举所有子窗口
+    win32gui.EnumChildWindows(父窗口句柄, 枚举回调, None)
+    
+    # 打印信息
+    print(f"找到 {len(子窗口列表)} 个子窗口:")
+    print("-" * 50)
+    
+    for i, 子句柄 in enumerate(子窗口列表, 1):
+        类名 = win32gui.GetClassName(子句柄)
+        标题 = win32gui.GetWindowText(子句柄)
+        print(f"{i:3d}. 句柄: {子句柄}, 类名: {类名}, 标题: {标题}")
+    
+    return 子窗口列表
 if __name__ == "__main__":
 #     import time
 #     print (time.time())
@@ -93,8 +126,10 @@ if __name__ == "__main__":
     # import random
     # 当前子任务队列 = [1, 2, 3, 4]
     # random.shuffle(当前子任务队列)
-    # print(当前子任务队列)
-    name1="129甲"
-    xinx=解析玩家全名(name1)
-    print(xinx)
+    # # print(当前子任务队列)
+    # name1="129甲"
+    # xinx=解析玩家全名(name1)
+    # print(xinx)
+    获取并打印子窗口(2123318)
+
     

@@ -573,9 +573,9 @@ class 异界夺宝任务(战斗任务执行器):
             return False
         区域 = self.游戏配置.区域.异界夺宝.报名标记查找区域标签
         if 区域:
-            结果 = self.线程.模板匹配器.match_bypicture(截图, "异界报名标记.bmp", threshold=0.8, region=区域.元组)
+            结果 = self.线程.模板匹配器.match_bypicture(截图, "异界报名标记.bmp", threshold=0.85, region=区域.元组)
         else:
-            结果 = self.线程.模板匹配器.match_bypicture(截图, "异界报名标记.bmp", threshold=0.8)
+            结果 = self.线程.模板匹配器.match_bypicture(截图, "异界报名标记.bmp", threshold=0.85)
         if 结果 is None:
             调试器.debug(self.调试分类, "未找到报名记号")
             return False
