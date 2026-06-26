@@ -1025,7 +1025,14 @@ class 特殊活动(BaseModel):
 
 
 
-
+class 传奇之路相关(BaseModel):
+    """"""
+    传奇之路查看队伍按钮区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(968,593,1063,626))
+    传奇之路我的队伍按钮区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(1087,595,1184,625))
+    传奇之路开始挑战按钮区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(802,578,897,607))
+    传奇之路通关成功提示文字区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(48,177,170,213))
+    传奇之路返回按钮区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(805,573,900,606))
+    传奇之路入口层数信息区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(778,262,919,300))
 
 
 class 至尊联赛相关(BaseModel):
@@ -1208,6 +1215,8 @@ class 区域配置(BaseModel):
     至尊联赛: 至尊联赛相关 = Field(default_factory=至尊联赛相关)
     # 商店购买
     商店: 商店购买 = Field(default_factory=商店购买)
+    # 传奇之路
+    传奇之路: 传奇之路相关 = Field(default_factory=传奇之路相关)
 
     首领合成页面右侧标签坐标池: 首领合成入口右侧标签坐标池 = Field(default_factory=首领合成入口右侧标签坐标池)    
     战场光翼图鉴页面右侧坐标池: 战场光翼图鉴页面右侧标签坐标池 = Field(default_factory=战场光翼图鉴页面右侧标签坐标池)
