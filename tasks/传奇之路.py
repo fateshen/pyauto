@@ -136,7 +136,7 @@ class 传奇之路任务(战斗任务执行器):
                 return False              
             return True
         
-        if time.time()-self.任务状态.最后在副本的时间>self.任务状态.超过此秒数未进入副本退出任务:
+        if time.time()-self.任务状态.最后在副本的时间>self.任务配置.超过此秒数未进入副本退出任务:
             self.重置副本()
             调试器.debug(self.调试分类, f"出副本超过30秒，默认不在执行传奇之路任务")
             return False
