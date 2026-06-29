@@ -759,7 +759,10 @@ class 主窗口(QMainWindow):
         
         from core.window_thread import 窗口线程
         线程 = 窗口线程(窗口句柄=句柄, 窗口名称=self.当前选中窗口名称)
+        线程.信号.任务启用变更.connect(self._任务启用变更处理)
+
         线程.信号.停止信号.connect(self._线程已停止)
+
         线程.信号.启动信号.connect(lambda name: self._刷新单个窗口状态(name))
         self.窗口线程列表[self.当前选中窗口名称] = 线程
         # 应用窗口偏移
@@ -1068,6 +1071,21 @@ class 主窗口(QMainWindow):
         线程.游戏配置.玩家.发送太古祖龙刷新通知 = 玩家.发送太古祖龙刷新通知
     
     # ==================== 公共方法 ====================
+    def _任务启用变更处理(self, 窗口名称, 任务ID,属性名称, 属性值):
+        """线程通知任务启用状态变更"""
+        # 更新编辑副本
+        if 窗口名称 in self._窗口编辑副本:
+            副本 = self._窗口编辑副本[窗口名称]
+            if 任务ID not in 副本["任务"]:
+                副本["任务"][任务ID] = {}
+            副本["任务"][任务ID][属性名称] = 属性值
+        
+        # 如果当前正好显示这个窗口，刷新 UI
+        if self.当前选中窗口名称 == 窗口名称:
+            self.任务配置标签._刷新列表启用状态_全部()
+            # 如果当前正在编辑这个任务，刷新控件
+            if self.任务配置标签.当前编辑任务ID == 任务ID:
+                self.任务配置标签._从副本加载到UI()
     
     def 添加窗口线程(self, 线程):
         self.窗口线程列表[线程.窗口名称] = 线程
@@ -1088,30 +1106,7 @@ class 主窗口(QMainWindow):
             self.umi状态标签.setText("● UMI-OCR 未启动")
             self.umi状态标签.setStyleSheet("color: #c62828; background-color: #ffebee; font-weight: bold; padding: 2px 6px; border-radius: 3px;")
             self.启动UMI按钮.setEnabled(True)
-    # def _启动UMI(self):
-    #     """启动 UMI-OCR"""
-    #     from pathlib import Path
-    #     import subprocess
-    #     import os
-        
-    #     可能路径列表 = [
-    #         Path("UMI-OCR/UMI-OCR.exe"),
-    #         Path("../UMI-OCR/UMI-OCR.exe"),
-    #     ]
-        
-    #     for 路径 in 可能路径列表:
-    #         if 路径.exists():
-    #             subprocess.Popen(str(路径.absolute()), cwd=str(路径.parent.absolute()),
-    #                         creationflags=subprocess.CREATE_NO_WINDOW)
-    #             self.umi状态标签.setText("● UMI-OCR 启动中...")
-    #             self.umi状态标签.setStyleSheet("color: #e65100; background-color: #fff3e0; font-weight: bold; padding: 2px 6px; border-radius: 3px;")
-    #             return
-        
-    #     # 没找到，让用户手动选择
-    #     from PySide6.QtWidgets import QFileDialog
-    #     路径, _ = QFileDialog.getOpenFileName(self, "选择 UMI-OCR.exe", "", "可执行文件 (*.exe)")
-    #     if 路径:
-    #         subprocess.Popen(路径, creationflags=subprocess.CREATE_NO_WINDOW)
+    
     def _启动UMI(self):
         from pathlib import Path
         import sys

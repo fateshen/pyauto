@@ -49,7 +49,7 @@ class 窗口线程信号(QObject):
     """窗口线程的信号发射器"""
     停止信号 = Signal(str)
     启动信号 = Signal(str)
-
+    任务启用变更 = Signal(str, str, str, object)  # 窗口名, 任务ID, 属性名, 属性值
 class 窗口线程(threading.Thread):
     """单个窗口的工作线程"""
     
@@ -1155,7 +1155,7 @@ class 窗口线程(threading.Thread):
                 self.游戏配置.区域.主界面.小地图地图名显示标签.元组))>1:
                 self.最后成功获取地图时间= time.time()
                 break
-
+        
       
 
 

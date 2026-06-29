@@ -474,7 +474,7 @@ class 古剑相关配置(BaseModel):
     古剑页面前往按钮标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(806, 606, 895, 632))
     古剑页面前往页面刷新时间区域标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(789, 560, 908, 601))
     古剑页面前往击杀按钮标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(804, 521, 895, 549))
-    古剑副本归属区域标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(48, 100, 216, 144))
+    古剑副本归属区域标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(52,102,221,142))
     古剑页面剩余次数区域标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(761, 646, 800, 677))
     古剑副本抢归属按钮标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(92, 153, 182, 182))
     古剑副本内剩余次数标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(35, 191, 241, 222))
@@ -694,8 +694,21 @@ class 群星圣域相关配置(BaseModel):
     群星圣域页面飞升灵境进入含红点范围标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(1039, 541, 1085, 587))
     群星圣域页面魔神禁地进入含红点范围标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(1046, 393, 1109, 458))
     群星圣域页面渡劫飞升进入含红点范围标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(1039, 284, 1088, 333))
+    群星圣域页面群星试炼进入范围标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(677,528,731,597))
+    群星圣域页面群星试炼开始挑战按钮标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(991,612,1087,645))
+    群星圣域页面群星圣殿进入标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(822,372,865,418))
+    群星圣殿页面十连按钮标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(918,605,992,634))
+    群星圣殿页面不显示奖励界面按钮标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(758,644,802,684))
+    群星圣殿页面十连群星令数量标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(958,568,1021,595))
+    星魂升级页面五行标头区域标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(652,228,1161,274))
+    星魂升级页面升级按钮标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(853,632,945,661))
+    星魂专属页面左侧卡牌红点搜索区域标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(539,224,591,671))
+    星魂专属页面中间卡牌红点搜索区域标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(635,315,1182,598))
+    星魂专属页面升级窗口关闭按钮区域标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(1016,191,1111,307))
+    星魂专属页面升级窗口升级按钮标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(803,601,899,631))
 
-
+    
+    
 # ==================== 魔神禁地相关配置 ====================
 
 class 魔神禁地相关配置(BaseModel):
