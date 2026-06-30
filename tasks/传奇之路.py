@@ -136,13 +136,14 @@ class 传奇之路任务(战斗任务执行器):
                 return False              
             return True
         
-        if time.time()-self.任务状态.最后在副本的时间>self.任务状态.超过此秒数未进入副本退出任务:
+        if time.time()-self.任务状态.最后在副本的时间>self.任务配置.超过此秒数未进入副本退出任务:
             self.重置副本()
             调试器.debug(self.调试分类, f"出副本超过30秒，默认不在执行传奇之路任务")
             return False
     def 重置副本(self):
         self.任务状态.剩余次数=0
         self.任务配置.我是队长=False
+        self.线程.信号.任务启用变更.emit(self.线程.窗口名称, self.任务配置.任务ID,"我是队长" , False)
         任务定义.导出配置到JSON(self.线程.窗口名称,线程=self.线程)    
     def 执行(self) -> str:
         """
@@ -231,7 +232,8 @@ class 传奇之路任务(战斗任务执行器):
         ).执行():
             return "结束"
         
-        if self.检查退出条件():
+        
+        if self.检查退出条件() and self.任务配置.我是队长:
             if self.辅助识别器.区域包含文字(self.游戏配置.区域.传奇之路.传奇之路通关成功提示文字区域.元组,"通关|成功"):
                 调试器.state(self.调试分类, "满足退出条件")
                 if self.退出副本():

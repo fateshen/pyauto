@@ -134,8 +134,8 @@ class 普通任务(战斗任务执行器):
         self._打印战斗状态()
         self._使用道具()
 
-        # from tasks.reward.活动检查 import 活动系列强化
-        # 每日=活动系列强化(self.线程.强化奖励管理器)
+        # from tasks.reward.群星圣殿升级 import 群星圣殿升级
+        # 每日=群星圣殿升级(self.线程.强化奖励管理器)
         # 每日.执行()
 
         # self.通用操作._打开背包()

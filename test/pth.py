@@ -127,9 +127,9 @@ if __name__ == "__main__":
     # 当前子任务队列 = [1, 2, 3, 4]
     # random.shuffle(当前子任务队列)
     # # print(当前子任务队列)
-    # name1="129甲"
-    # xinx=解析玩家全名(name1)
-    # print(xinx)
-    获取并打印子窗口(2123318)
+    name1="a129.古剑宝贝多出"
+    xinx=解析玩家全名(name1)
+    print(xinx)
+    # 获取并打印子窗口(2123318)
 
     

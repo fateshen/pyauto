@@ -177,6 +177,7 @@ class 每日累充(强化奖励任务基类):
                     打印分配结果(分配结果, 需要充值金额)
                     if 分配结果:     
                         self._使用红包(分配结果)
+                        return
 
     def _领取每日累充奖励(self,按钮:Tuple[int,int,int,int]) ->Optional[bool]:
         调试器.debug("强化奖励", "每日累充: 领取宝箱")

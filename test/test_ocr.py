@@ -484,8 +484,8 @@ def test_ocr():
     print("=" * 60)
     
     # 窗口句柄
-    hwnd = 1123716
-    # hwnd = 12078430
+    # hwnd = 1123716
+    hwnd = 12078430
     区域=区域配置.创建默认()
     # 区域.保存到文件("region_config.json")
     # 1. 截图
@@ -509,8 +509,8 @@ def test_ocr():
     模板匹配=TemplateMatcher()
     鼠标模拟器=ActionExecutor(hwnd)
     print("✅ 匹配开始")
-    自检区域=464,220,1208,605
-    匹配=模板匹配.match_bypicture(截图, "异界报名标记.bmp",0.60,自检区域)
+    自检区域=区域.古剑.古剑副本归属区域标签.元组
+    匹配=模板匹配.match_bypicture(截图, "红点1.bmp",0.80,缩放区域(自检区域,1))
     
     if 匹配:
 
@@ -590,7 +590,7 @@ def test_ocr():
     # 地图结果 = 识别器.recognize_text(截图, region=地图区域)
     # print(f"   地图名称识别: '{地图结果}'")
     
-    info=区域.主宰.主宰归属行会检查区域.元组
+    info=区域.古剑.古剑副本归属区域标签.元组
     # print(info)
    
     # info = 缩放区域(info, 1.2)
