@@ -485,7 +485,7 @@ def test_ocr():
     
     # 窗口句柄
     # hwnd = 1123716
-    hwnd = 12078430
+    hwnd = 3414074
     区域=区域配置.创建默认()
     # 区域.保存到文件("region_config.json")
     # 1. 截图
@@ -590,7 +590,7 @@ def test_ocr():
     # 地图结果 = 识别器.recognize_text(截图, region=地图区域)
     # print(f"   地图名称识别: '{地图结果}'")
     
-    info=区域.古剑.古剑副本归属区域标签.元组
+    info=区域.主宰.主宰综合信息页面主宰数量区域标签.元组
     # print(info)
    
     # info = 缩放区域(info, 1.2)

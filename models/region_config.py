@@ -404,7 +404,7 @@ class 跨服入侵相关旧配置(BaseModel):
 
 class 主宰相关配置(BaseModel):
     """主宰相关区域"""
-    主宰综合信息页面主宰数量区域标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(818, 400, 999, 435))
+    主宰综合信息页面主宰数量区域标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(936,406,999,435))
     主宰综合信息页面立即前往区域标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(867, 437, 932, 455))
     主宰综合信息页面最强玩家区域标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(591, 262, 947, 359))
     主宰副本小地图主宰战场标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(711, 229, 831, 265))
