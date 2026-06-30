@@ -595,6 +595,8 @@ class 修罗魔域相关配置(BaseModel):
     修罗BOSS页面刷新时间范围标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(787, 567, 913, 600))
     修罗BOSS页面前往按钮标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(801, 606, 900, 633))
 
+    修罗血脉页面升级按钮带红点区域标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(999,612,1153,675))
+
 
 # ==================== 圣兽试炼相关配置 ====================
 
@@ -617,6 +619,9 @@ class 圣兽试炼相关配置(BaseModel):
     朱雀小地图刷新区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(717, 410, 733, 426))
     圣兽试炼前往页面前往按钮标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(801, 538, 890, 570))
     圣兽试炼前往页面单倍奖励按钮标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(675, 315, 767, 331))
+
+    圣兽血脉上部小标题页面标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(474,222,899,260))
+    圣兽血脉升级按钮标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(1043,639,1129,669))
 
 
 # ==================== 圣兽宝库相关配置 ====================

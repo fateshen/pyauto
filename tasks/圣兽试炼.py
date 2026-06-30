@@ -9,7 +9,7 @@ from core.task_executors.battle_executor import 战斗任务执行器
 from core.page_operations import 页面操作集
 from typing import Optional, Tuple, List,Dict, Any
 from pydantic import  Field
-from core.utils import 匹配分组关键字, 提取所有数字, 提取次数, 解析时间文字, 重试, 随机点
+from core.utils import 匹配分组关键字, 提取所有数字, 提取次数, 解析时间文字, 重试, 随机点,缩放区域
 from core.debug import 调试器
 import time
 from core.recognition import OCRResult, ocr, 分离粘连文字
@@ -207,6 +207,15 @@ class 圣兽试炼(战斗任务执行器):
         # 等待刷新时间，强制等待服务器时间同步
         time.sleep(max(0.5, self.游戏配置.刷新等待秒))
         self.线程.刷新截图()
+        
+        # 检查圣兽血脉升级情况
+        右侧卡区域 = self.游戏配置.区域.战场光翼图鉴页面右侧坐标池.位置3.元组
+        if  self.辅助识别器.查找图片单结果(缩放区域(右侧卡区域, 1.6), "红点1.bmp"):
+            调试器.debug("圣兽试炼升级", "检查到血脉升级：重置血脉升级奖励任务")            
+            for 任务 in self.线程.强化奖励管理器.任务实例列表:
+                if 任务.任务名称 == "圣兽试炼升级":
+                    任务.下次执行时间 = time.time() 
+                    break
 
         weeknumber = datetime.datetime.today().isoweekday()
         if weeknumber <=4:  # 周1-4
