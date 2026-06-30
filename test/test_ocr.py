@@ -485,7 +485,7 @@ def test_ocr():
     
     # 窗口句柄
     # hwnd = 1123716
-    hwnd = 3414074
+    hwnd = 1250978
     区域=区域配置.创建默认()
     # 区域.保存到文件("region_config.json")
     # 1. 截图
