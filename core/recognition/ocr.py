@@ -508,7 +508,7 @@ class PixelFilter:
     """高级像素过滤器（向量化版本）"""
     
     def __init__(self):
-        self.debug_mode = False
+        self.debug_mode = True
     
     def is_full_range(self, range_str: str) -> bool:
         """判断单个区间是否为全范围"""

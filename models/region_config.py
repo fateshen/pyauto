@@ -652,6 +652,10 @@ class 虚空剑界相关配置(BaseModel):
     虚空剑界页面BOSS详情进入范围标签5: 区域坐标 = Field(default_factory=lambda: 区域坐标(701, 557, 851, 625))
     虚空BOSS页面刷新时间范围标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(794, 569, 901, 594))
     虚空BOSS页面前往按钮标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(801, 604, 902, 636))
+    虚空剑意页面升级按钮带红点区域标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(993,613,1137,676))
+    虚空飞剑页面小页面关闭按钮区域标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(1016,182,1084,273))
+    虚空飞剑页面激活按钮标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(788,600,884,633))
+    虚空飞剑页面红点搜索区域标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(597,234,996,663))
 
 
 # ==================== 决战盟重相关配置 ====================
