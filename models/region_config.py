@@ -1032,7 +1032,7 @@ class 特殊活动(BaseModel):
     连充豪礼页面天数范围区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(850,348,907,669))
     连充豪礼页面金额奖励区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(608,303,1005,343))
     红包使用信息提示区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(744,348,927,388))
-    红包数量输入区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(794,396,882,427))
+    红包数量输入区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(810,396,860,427))
     红包使用按钮区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(908,461,992,490))
     红包取消按钮区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(700,459,780,490))
     红包提示信息搜寻区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(780,400,900,530))

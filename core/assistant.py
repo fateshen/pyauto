@@ -145,7 +145,7 @@ class 战斗辅助识别器:
         
         # 3. 识别归属文字
         filter_config = {
-            "color_range": "20,50,150,255,0,16",
+            "color_range": "20,45,150,255,0,16",
             "keep_color": True,
             "background": "black"
         }

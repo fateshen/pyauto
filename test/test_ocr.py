@@ -484,8 +484,8 @@ def test_ocr():
     print("=" * 60)
     
     # 窗口句柄
-    hwnd = 1123716
-    # hwnd = 12078430
+    # hwnd = 1123716
+    hwnd = 12078430
     区域=区域配置.创建默认()
     # 区域.保存到文件("region_config.json")
     # 1. 截图
@@ -590,7 +590,8 @@ def test_ocr():
     # 地图结果 = 识别器.recognize_text(截图, region=地图区域)
     # print(f"   地图名称识别: '{地图结果}'")
     
-    info=区域.古剑.古剑副本归属区域标签.元组
+    # info=区域.古剑.古剑副本归属区域标签.元组
+    info=区域.各种活动.红包数量输入区域.元组
     # print(info)
    
     # info = 缩放区域(info, 1.2)
@@ -598,14 +599,15 @@ def test_ocr():
     # # 5. 获取详细结果（带坐标）
     # print("\n[5] 获取详细识别结果（带坐标）...")
     filter_config = {
-                "color_range": "20,45,150,255,0,16",  
+                # "color_range": "20,45,150,255,0,16",  
+                "color_range": "60,150,60,150,60,150",  
                 # # "color_range":"162,178,9,14,9,15|125,130,6,15,2,15|229,233,7,11,7,11|138,165,10,18,10,18|215,219,8,12,8,12|186,205,8,13,8,13|110,120,11,17,11,18",
                 # "color_diff": "8-80,255,80,255,80,255",
                 "keep_color": True,
                 "background": "black"
             }
     时间=time.time()
-    ocr_result = 识别器.recognize_result(截图,info,filter_config)
+    ocr_result = 识别器.recognize_result(截图,info)
     print(f"识别时间：{time.time()-时间}")
     # tex=ocr_result.get_all_texts()
 
