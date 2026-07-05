@@ -17,7 +17,7 @@ import numpy as np
 # 添加项目根目录到路径
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from core.recognition import TextRecognizer,TemplateMatcher
+from core.recognition import TextRecognizer,TemplateMatcher,PixelAnalyzer
 from core.window_manager import capture_window
 from models.region_config import 区域配置
 from core.action_executor import ActionExecutor
@@ -484,8 +484,8 @@ def test_ocr():
     print("=" * 60)
     
     # 窗口句柄
-    # hwnd = 1123716
-    hwnd = 12078430
+    hwnd = 1123716
+    # hwnd = 12078430
     区域=区域配置.创建默认()
     # 区域.保存到文件("region_config.json")
     # 1. 截图
@@ -508,14 +508,16 @@ def test_ocr():
     识别器 = TextRecognizer()
     模板匹配=TemplateMatcher()
     鼠标模拟器=ActionExecutor(hwnd)
-    print("✅ 匹配开始")
-    自检区域=区域.古剑.古剑副本归属区域标签.元组
-    匹配=模板匹配.match_bypicture(截图, "红点1.bmp",0.80,缩放区域(自检区域,1))
+    像素分析=PixelAnalyzer()
     
-    if 匹配:
+    print("✅ 匹配开始")
+    自检区域=区域.焚天炎域.焚天禁地中间地图检索范围.元组
+    # 匹配=模板匹配.match_bypicture(截图, "BOSS标记.bmp",0.80,缩放区域(自检区域,1))
+    
+    # if 匹配:
 
-        print(  f"匹配：{匹配}")
-    print(  f"匹配：")
+    #     print(  f"匹配：{匹配}")
+    # print(  f"匹配：")
 
     # 图片集合=("1元图标.bmp", "5元图标.bmp", "10元图标.bmp", "50元图标.bmp","100元图标.bmp", 
                        
@@ -536,10 +538,10 @@ def test_ocr():
     # 鼠标模拟器.type_text("11")
     # 鼠标模拟器.set_keyboard_mode("前台")
     
-    # 多匹配=模板匹配.match_all_bypicture(截图, "3级异界.bmp",region=区域.异界夺宝.报名标记查找区域标签.元组)
-    # print(f"   多匹配：{多匹配}")
-    # for 匹配 in 多匹配:
-    #     print(  f"匹配x：{匹配.rect}")
+    多匹配=模板匹配.match_all_bypicture(截图, "BOSS标记.bmp",region=自检区域)
+    print(f"   多匹配：{多匹配}")
+    for 匹配 in 多匹配:
+        print(  f"匹配x：{匹配.rect}")
     # 文字集合=识别器.recognize_result(截图,区域.合成.合成左分类卡区域标签.元组)
     # 文字区域集合=文字集合.get_all_boxes()
     # 文字集合.print_items()
@@ -676,7 +678,10 @@ def test_ocr():
     #         print(f"   找到'刷'数量: {len(位置)}")
     #     else:
     #         print("   未找到'刷'")
-        
+
+
+    count=像素分析.count_colors(截图,区域.主界面.目标信息显示区域标签.元组,"64C5EA,0.99")
+    print(count[0])
        
     
     print("\n" + "=" * 60)

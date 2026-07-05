@@ -1077,6 +1077,7 @@ class 焚天炎域页面(BaseModel):
     焚天炎域禁地页面禁地次数标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(772, 637, 891, 667))
     焚天炎域禁地页面前往挑战标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(1042,624,1138,653))
     焚天禁地中间地图检索范围: 区域坐标 = Field(default_factory=lambda: 区域坐标(471,226,1072,665))
+    焚天火莲页面提升按钮带红点区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(1016,621,1156,687))
 
 class 焚天禁地地图位置配置(BaseModel):
     """诸神遗迹BOSS地图位置，喜怒哀乐泰坦"""

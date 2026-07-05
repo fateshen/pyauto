@@ -9,7 +9,7 @@ from core.task_executors.battle_executor import 战斗任务执行器
 from core.page_operations import 页面操作集
 from typing import Optional, Tuple, List,Dict, Any
 from pydantic import  Field
-from core.utils import 匹配分组关键字, 解析时间文字, 重试, 随机点
+from core.utils import 匹配分组关键字, 解析时间文字, 重试, 随机点,缩放区域
 from core.debug import 调试器
 import time
 from core.recognition import OCRResult, ocr, 分离粘连文字
@@ -169,6 +169,15 @@ class 焚天炎域(战斗任务执行器):
         # 等待刷新时间，强制等待服务器时间同步
         time.sleep(max(0.5, self.游戏配置.刷新等待秒))
         self.线程.刷新截图()
+
+        # 检查圣兽血脉升级情况
+        右侧卡区域 = self.游戏配置.区域.首领合成页面右侧标签坐标池.位置3.元组
+        if  self.辅助识别器.查找图片单结果(缩放区域(右侧卡区域, 1.6), "红点1.bmp"):
+            调试器.debug("焚天火莲升级", "检查到火莲升级：重置火莲升级奖励任务")            
+            for 任务 in self.线程.强化奖励管理器.任务实例列表:
+                if 任务.任务名称 == "焚天火莲升级":
+                    任务.下次执行时间 = time.time() 
+                    break
 
         # 3. 更新剩余次数
         调试器.debug(self.调试分类, "步骤3: 读取焚天炎域页面剩余次数")

@@ -1054,7 +1054,11 @@ class 窗口线程(threading.Thread):
                 父窗口 = 上级
             
             # 置顶并点击激活
-            win32gui.SetForegroundWindow(父窗口)
+            try:
+                win32gui.SetForegroundWindow(父窗口)
+            except Exception as e:
+                调试器.warning("卡死检测", f"激活窗口失败: {e}")
+                return  # 不抛异常，跳过本次刷新
             time.sleep(0.3)
             
             rect = win32gui.GetWindowRect(父窗口)

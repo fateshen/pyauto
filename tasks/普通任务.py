@@ -4,6 +4,7 @@
 """
 
 
+from core.utils import 缩放区域
 from tasks.base import 任务定义
 from core.task_executors.battle_executor import 战斗任务执行器
 from core.page_operations import 页面操作集
@@ -20,11 +21,12 @@ from typing import Optional, Any,List,Tuple
     优先级=1,
     地图关键字="",
     提前进场秒数=0,
+    进副本先检查击杀大怪=False,
     普通任务模式="挂元宝",
     状态_当前阶=0,
     状态_普通本当前层=0,
     状态_普通任务上次换层时间=time.time(),
-
+    状态_移动开始时间=0,
 
 )
 class 普通任务(战斗任务执行器):
@@ -33,8 +35,159 @@ class 普通任务(战斗任务执行器):
     def __init__(self, 线程, 任务配置, 任务状态):
         super().__init__(线程, 任务配置, 任务状态)   
         self.下一次使用道具时间=time.time() +600  
+        self.已走位BOSS编号=[]
+        self.BOSS地图位置=[]
+        self.上次走位时间=0
+        self.当前玩家位置=[]
+        self.移动完成时间 = time.time()
+        self.大怪统计=0
+
+    
+    def _获取未走位BOSS编号(self) -> List[str]:
+        A=["0", "1", "2", "3", "4"]
+        return [i for i in A if i not in self.已走位BOSS编号]
+
+    def _需要走位(self) -> bool:
+        """判断是否需要走位"""
+        return not set(self.已走位BOSS编号)==set(["0", "1", "2", "3", "4"])
+    def _大怪击杀检查(self) -> Optional[str]:
+        """判断是否需要大怪击杀检查和走位"""
+        if not self.任务配置.进副本先检查击杀大怪:
+            调试器.trace(self.调试分类, "大怪检查: 未启用")
+            return None
+        
+        # 检查是否刚完成走位处于保护时间
+        if time.time() - self.移动完成时间 < 10:
+            调试器.trace(self.调试分类, f"大怪检查: 走位冷却中(剩余{10 - (time.time() - self.移动完成时间):.1f}秒)")
+            return None
+        
+        未走位编号 = self._获取未走位BOSS编号()
+        if not 未走位编号:
+            调试器.trace(self.调试分类, "大怪检查: 所有BOSS已走位")
+            return None
+        
+        调试器.trace(self.调试分类, f"大怪检查: 未走位BOSS={未走位编号}")
+        
+        # 目标是大大怪 → 重置时间，不走位
+        if self.辅助识别器.目标是大怪():
+            调试器.debug(self.调试分类, "大怪检查: 目标是大怪，不走位")
+            self.移动完成时间 = time.time()
+            self.任务状态.移动开始时间 = 0
+            self.大怪统计=0
+            return None
+        self.大怪统计=1+self.大怪统计
+        if self.大怪统计 <2:
+            
+            return None        
+        静止时长 = self.公共变量.获取静止时长()
+        移动已耗时 = (
+            time.time() - self.任务状态.移动开始时间
+            if self.任务状态.移动开始时间 > 0
+            else 0
+        )
+        
+        调试器.trace(self.调试分类, f"大怪检查: 静止={静止时长:.1f}s, 移动已耗时={移动已耗时:.1f}s")
+        
+        # 正在移动中
+        if self.任务状态.移动开始时间 > 0 and 移动已耗时 < 50 and 静止时长 <= 3:
+            调试器.trace(self.调试分类, "大怪检查: 正在走位中")
+            return "正在走位"
+        
+        # 移动超时且已静止 → 认为到达
+        if self.任务状态.移动开始时间 > 0 and 移动已耗时 >= 50 and 静止时长 > 3:
+            调试器.state(self.调试分类, "大怪检查: 走位完成")
+            self.移动完成时间 = time.time()
+            self.任务状态.移动开始时间 = 0
+            return None
+        
+        # 打开大地图
+        if not self.通用操作.打开大地图():
+            调试器.debug(self.调试分类, "大怪检查: 打开大地图失败")
+            return None
+        
+        self._获取BOSS刷新位置()
+        目标位置 = self._获取最近未走位BOSS位置()
+        if 目标位置 is None:
+            调试器.debug(self.调试分类, "大怪检查: 未找到最近未走位BOSS")
+            self.通用操作.关闭大地图()
+            return None
+        
+        移动目标区域 = self.BOSS地图位置[目标位置]
+        调试器.state(self.调试分类, f"大怪检查: 走位到BOSS{目标位置} 区域={移动目标区域}")
+        
+        # 点击目标坐标
+        self.通用操作.点击区域(移动目标区域, 3, 0.08)
+        
+        # 记录移动开始时间
+        self.任务状态.移动开始时间 = time.time()
+        序号_str = str(目标位置)
+        if 序号_str not in self.已走位BOSS编号:
+            self.已走位BOSS编号.append(序号_str)
+            调试器.debug(self.调试分类, f"大怪检查: 标记BOSS{目标位置}已走位")
+        
+        # 关闭地图
+        if not self.通用操作.关闭中间可能存在的窗口():
+            调试器.debug(self.调试分类, "大怪检查: 关闭地图失败")
+        
+        return "开始走位"
+        
+    def _获取最近未走位BOSS位置(self) -> Optional[int]:
+        未走位序号 = self._获取未走位BOSS编号()
+        if not 未走位序号:
+            return None
+        
+        # 没有玩家位置 → 随机选一个未走位的
+        if not self.当前玩家位置:
+            return int(random.choice(未走位序号))
+        
+        玩家x, 玩家y = self.当前玩家位置
+        最近距离 = float('inf')
+        最近序号 = None
+        
+        for 序号_str in 未走位序号:
+            序号 = int(序号_str)
+            if 序号 >= len(self.BOSS地图位置):
+                continue
+            位置 = self.BOSS地图位置[序号]
+            bx = (位置[0] + 位置[2]) // 2
+            by = (位置[1] + 位置[3]) // 2
+            距离 = ((玩家x - bx) ** 2 + (玩家y - by) ** 2) ** 0.5
+            if 距离 < 最近距离:
+                最近距离 = 距离
+                最近序号 = 序号
+        
+        return 最近序号
+
+    def _获取BOSS刷新位置(self):
+        截图 = self.线程.截图
+        if 截图 is None:
+            return None
+        
+        自检区域=self.游戏配置.区域.焚天炎域.焚天禁地中间地图检索范围.元组
+        if self.BOSS地图位置==[]:
+            多匹配=self.线程.模板匹配器.match_all_bypicture(截图, "BOSS标记.bmp",region=自检区域)
+        
+            #获取BOSS刷新位置
+            for 匹配 in 多匹配:
+                print(  f"匹配x：{匹配.rect}")
+                self.BOSS地图位置.append(匹配.rect)
+        玩家位置=self.辅助识别器.查找图片单结果(自检区域,"小地图玩家色块.bmp", 0.95)
+        if 玩家位置 is not None:  
+            self.当前玩家位置=[玩家位置[0],玩家位置[1]]
+        #校检BOSS存活情况，颜色红死亡、绿存活
+        for 序号, 位置 in enumerate(self.BOSS地图位置):
+            位置扩大=缩放区域(位置, 6)
+            counts= self.线程.像素分析器.count_colors(截图, 位置扩大, "0909E7,0.95|03EF28,0.95")
+            if counts[0]>2:
+                序号_str = str(序号)
+                if 序号_str not in self.已走位BOSS编号:
+                    self.已走位BOSS编号.append(序号_str)
+        调试器.trace(self.调试分类, f"大怪检查: 未走位BOSS={self.已走位BOSS编号}")
+                
+                
 
 
+        pass
     def 是否在副本中(self) -> bool:
         if self.线程.当前地图 == "盟重省":
             调试器.trace("普通任务", "当前在盟重省，判定不在副本中")
@@ -81,7 +234,45 @@ class 普通任务(战斗任务执行器):
 
     def 不带子任务执行(self) -> str:
         
-        return self.执行()
+       # 1. 判断是否在副本中
+        是否副本 = self.是否在副本中()
+        if 是否副本:
+            调试器.debug("普通任务", "判定在副本中 → 执行战斗逻辑")
+            return self.执行副本战斗逻辑不带子任务()
+        
+        # 2. 执行入口逻辑
+        调试器.debug("普通任务", "判定不在副本中 → 执行入口逻辑")
+        if not self.执行入口逻辑():
+            调试器.debug("普通任务", "入口逻辑返回失败")
+            return "失败"
+        
+        
+        调试器.state("普通任务", "已进入副本，开始战斗")
+        return "进行中"
+    def 执行副本战斗逻辑不带子任务(self) -> str:
+        """执行副本战斗逻辑"""
+        调试器.debug("普通任务", "执行战斗逻辑")
+        
+        截图=self.线程.截图
+        
+        # 1.1. 检查死亡复活
+        if self.检查并处理复活():
+            调试器.state("普通任务", "死亡复活处理完成")
+            return "进行中"
+        
+        # 2. 更新战斗状态
+        self.更新目标状态()
+        self.更新静止状态(截图)
+        
+        # 3. 打印战斗状态
+        self._打印战斗状态()
+       
+        # 5. 检查自动战斗
+        self.检查调整自动战斗状态()
+        self.检查调整自动走位状态()
+        return "进行中"
+    
+
     def 执行(self) -> str:
         """
         执行任务（模板方法）
@@ -130,13 +321,16 @@ class 普通任务(战斗任务执行器):
         self.更新目标状态()
         self.更新静止状态(截图)
         
+        结果= self._大怪击杀检查()
+        if 结果:
+            return 结果
         # 3. 打印战斗状态
         self._打印战斗状态()
         self._使用道具()
 
-        from tasks.reward.圣兽试炼升级 import 圣兽试炼升级
-        每日=圣兽试炼升级(self.线程.强化奖励管理器)
-        每日.执行()
+        # from tasks.reward.每日累充 import 每日累充
+        # 每日=每日累充(self.线程.强化奖励管理器)
+        # 每日.执行()
 
         # self.通用操作._打开背包()
         # time.sleep(0.5)

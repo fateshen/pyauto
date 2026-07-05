@@ -143,13 +143,16 @@ class 通用操作集:
         ).执行():
             调试器.state("战斗助手", "点击回城石")
             return True
+        if 匹配分组关键字(self.线程.当前地图,"魔神禁|群星试|会试"): 
+            return  True
         self.点击区域(回城石区域,2,0.1)        
         调试器.debug("战斗助手", "双击回城石点")
         return True
         
     def 按副本类型退出(self) -> bool:
         if 匹配分组关键字(self.线程.当前地图,"魔神禁|群星试|会试"): 
-            time.sleep(0.3)
+            time.sleep(0.8)
+            self.线程.刷新截图()
             if not self.页面.创建点击文字操作(
                 self.游戏配置.区域.主界面.魔神禁地退出确认区域标签.元组,
                 "确",

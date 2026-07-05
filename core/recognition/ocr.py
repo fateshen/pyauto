@@ -781,7 +781,7 @@ class TextRecognizer:
                        image: np.ndarray,
                        region: Optional[Tuple[int, int, int, int]] = None,                       
                        filter_config: Optional[dict] = None,
-                       region_format: str = "ltrb") -> str:
+                       region_format: str = "ltrb", 放大倍数=1) -> str:
         """
         识别图像中的文字，返回文本
         
@@ -799,7 +799,9 @@ class TextRecognizer:
             roi, _, _ = crop_roi(image, region, region_format)
         else:
             roi = image
-        
+        if 放大倍数 > 1:
+            h, w = roi.shape[:2]
+            roi = cv2.resize(roi, (w * 放大倍数, h * 放大倍数), interpolation=cv2.INTER_CUBIC)
         # 2. 像素过滤（如果配置了）
         if filter_config:
             roi = self._apply_filter(roi, filter_config)

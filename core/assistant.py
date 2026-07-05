@@ -117,7 +117,15 @@ class 战斗辅助识别器:
         if 匹配分组关键字(目标信息,"归|属"):
             return "怪物"
         return ""
-    
+    def 目标是大怪(self)->Optional[bool]:
+        截图 = self.线程.截图
+        if 截图 is None:
+            return None
+        大怪信息=self.线程.像素分析器.count_colors(截图,self.游戏配置.区域.主界面.目标信息显示区域标签.元组,"64C5EA,0.99")
+        if 大怪信息[0]>8:
+            调试器.debug("战斗助手", f"目标是大怪{大怪信息[0]}")
+            return True
+        return False
     def 古剑类副本归属判定(self):
         """
         判定BOSS归属
@@ -874,7 +882,7 @@ class 战斗辅助识别器:
         
         return  匹配分组关键字(识别文字,文字规则)
     
-    def 获取区域文字(self,文字区域:Tuple[int,int,int,int],filter_config:Optional[dict]=None) ->str:
+    def 获取区域文字(self,文字区域:Tuple[int,int,int,int],filter_config:Optional[dict]=None,图片放大倍数=1) ->str:
         截图 = self.线程.截图
         if 截图 is None:
             截图=self.线程.刷新截图()
@@ -882,9 +890,9 @@ class 战斗辅助识别器:
             return ""
       
         if filter_config:           
-            识别文字=self.线程.文字识别器.recognize_text(截图,文字区域,filter_config)
+            识别文字=self.线程.文字识别器.recognize_text(截图,文字区域,filter_config,放大倍数=图片放大倍数)
         else:
-            识别文字=self.线程.文字识别器.recognize_text(截图,文字区域)
+            识别文字=self.线程.文字识别器.recognize_text(截图,文字区域,放大倍数=图片放大倍数)
         
         return  识别文字
     def 获取区域文字坐标(self,文字区域:Tuple[int,int,int,int],filter_config:Optional[dict]=None) ->OCRResult|None:
@@ -919,7 +927,7 @@ class 战斗辅助识别器:
             return []
         return self.线程.像素分析器.count_colors(截图,区域,规则)
         
-    def 获取区域次数(self,文字区域:Tuple[int,int,int,int],filter_config:Optional[dict]=None,规则:Optional[str]=None) ->Optional[int]:
+    def 获取区域次数(self,文字区域:Tuple[int,int,int,int],filter_config:Optional[dict]=None,规则:Optional[str]=None,放大倍数=1) ->Optional[int]:
         """
         获取区域中的剩余次数
         
@@ -932,7 +940,7 @@ class 战斗辅助识别器:
             小于0，识别失败
             None: 识别失败
         """
-        文字=self.获取区域文字(文字区域,filter_config)
+        文字=self.获取区域文字(文字区域,filter_config,图片放大倍数=放大倍数)
         if not 文字:
             return None
         if 规则 is not None and not 匹配分组关键字(文字,规则):
