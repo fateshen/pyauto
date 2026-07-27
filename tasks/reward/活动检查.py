@@ -1,8 +1,5 @@
 # tasks/reward/huodong.py
 
-
-import re
-
 from core.recognition import OCRResult
 from core.utils import 是否为今天, 缩放区域,匹配分组关键字,是否有重叠,提取次数
 from typing import List, Tuple
@@ -98,15 +95,48 @@ class 活动系列强化(强化奖励任务基类):
                             "重试延迟": 300  
                             }         
                 ).执行():
+                    
                     文字集合=self.辅助识别器.获取区域文字坐标(self.配置.区域.合成.合成左分类卡区域标签.元组)
-                    图标集合=self.辅助识别器.查找图片多结果(self.配置.区域.合成.合成左分类卡区域标签.元组,"红点1.bmp")
+                    图标集合=self.辅助识别器.查找图片多结果(self.配置.区域.合成.合成左分类卡区域标签.元组,"红点1.bmp")   
+
+                    if 文字集合 is None:  continue
+                    BOSS来袭按钮区域=文字集合.find("BOSS来袭|BOSS来")  
+                    if BOSS来袭按钮区域 is not  None:   
+                        BOSS来袭配置=self.页面.线程.获取任务配置("BOSS来袭")
+                        if BOSS来袭配置 is not None:
+                            if not 是否为今天(BOSS来袭配置.节日BOSS开启时间):
+                                BOSS来袭配置.节日BOSS开启时间=time.time()
+                                调试器.error("BOSS来袭", "开启时间已更新")
+                                from tasks.base import 任务定义
+                                任务定义.导出配置到JSON(self.页面.线程.窗口名称,线程=self.页面.线程)
+                                BOSS来袭状态=self.页面.线程.获取任务状态_按名称("BOSS来袭")                                                      
+                                if BOSS来袭状态 is not None:
+                                    调试器.debug("BOSS来袭", "次数已更新")
+                                    BOSS来袭状态.剩余次数=1
+                        
+                    蓬莱秘境按钮区域=文字集合.find("蓬莱秘境|蓬莱,境|蓬莱秘")  
+                    if 蓬莱秘境按钮区域 is not  None:
+                        if 是否有重叠(蓬莱秘境按钮区域,图标集合):  
+                            蓬莱秘境状态=self.页面.线程.获取任务状态_按名称("蓬莱秘境")                                                      
+                            if 蓬莱秘境状态 is not None:
+                                调试器.debug("蓬莱秘境", "次数已更新")
+                                蓬莱秘境状态.剩余次数=1
+                            蓬莱秘境配置=self.页面.线程.获取任务配置("蓬莱秘境")
+                            if 蓬莱秘境配置 is not None:
+                                蓬莱秘境配置.节日BOSS开启时间=time.time()
+                                调试器.error("蓬莱秘境", "开启时间已更新")
+                                from tasks.base import 任务定义
+                                任务定义.导出配置到JSON(self.页面.线程.窗口名称,线程=self.页面.线程)
+
 
                     if self.灵符特惠购买节日特殊奖励:
                         if self._激活可用标签(文字集合,图标集合,标题规则="灵,特惠"):
                             self._灵符特惠()                    
                     if self._激活可用标签(文字集合,图标集合,标题规则="节日试炼"):
                         self._节日试炼()
-                    if self._激活可用标签(文字集合,图标集合,标题规则="节日福利|节日送礼"):
+                    if self._激活可用标签(文字集合,图标集合,标题规则="节日福利|节日送礼|登录送礼"):
+                        self._节日福利()
+                    if self._激活可用标签(文字集合,图标集合,标题规则="节日任务"):
                         self._节日福利()
                     if self._激活可用标签(文字集合,图标集合,标题规则="节日,赏"):
                         self._节日犒赏()
@@ -116,12 +146,13 @@ class 活动系列强化(强化奖励任务基类):
 
     def _激活可用标签(self,文字集合:OCRResult,图标集合:List[Tuple[int, int,int, int]],标题规则:str)->bool:
         文字区域=文字集合.find(标题规则)
+
         if 文字区域 is None: return False
-        if 是否有重叠(文字区域,图标集合):
+        if 是否有重叠(文字区域,图标集合):            
             self.通用操作.点击区域(文字区域,2)
             time.sleep(self.配置.默认等待秒)
             self.页面.线程.刷新截图()
-            return True
+            return True        
         return False
     
     def _节日试炼(self):
@@ -165,6 +196,20 @@ class 活动系列强化(强化奖励任务基类):
                     break
                 time.sleep(self.配置.默认等待秒)
                 self.页面.线程.刷新截图()
+            for _ in range(10):
+                if not self.页面.创建寻图点击原区域操作(
+                    缩放区域(self.配置.区域.各种活动.节日福利领取奖励按钮区域.元组,1.6),
+                    "红点1.bmp",                   
+                ).执行():
+                    break
+                time.sleep(self.配置.默认等待秒)
+                self.页面.线程.刷新截图()
+        self.页面.线程.公共变量.待发送聊天队列.append({
+                "频道": "跨服",
+                "内容": "1",
+                "添加时间": time.time()
+            })    
+            
 
     def _节日福利(self):
         for _ in range(5):

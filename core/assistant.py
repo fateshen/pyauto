@@ -414,7 +414,7 @@ class 战斗辅助识别器:
         
         return None
     
-    def 获取刷新秒数(self,区域:Tuple[int,int,int,int],filter_config: Optional[dict] = None,刷新关键字规则:Optional[str]=None) ->Optional[int] :
+    def 获取刷新秒数(self,区域:Tuple[int,int,int,int],filter_config: Optional[dict] = None,刷新关键字规则:Optional[str]=None,放大=1) ->Optional[int] :
         """获取刷新时间，单位秒"""
         截图 = self.线程.截图
         if 截图 is None:
@@ -423,12 +423,12 @@ class 战斗辅助识别器:
             return None
         if filter_config:             
             结果 = self.线程.文字识别器.recognize_text(
-                截图, 区域,filter_config
+                截图, 区域,filter_config,放大倍数=放大
             )
             # 调试器.trace("战斗助手", "获取刷新秒数: 有像素解析")
         else:             
             结果 = self.线程.文字识别器.recognize_text(
-                截图, 区域
+                截图, 区域,放大倍数=放大
             )
             # 调试器.trace("战斗助手", "获取刷新秒数: 无像素解析")
         if not 结果:
@@ -867,7 +867,7 @@ class 战斗辅助识别器:
         return ""
     
     #======================文字识别辅助==================
-    def 区域包含文字(self,文字区域:Tuple[int,int,int,int],文字规则:str,filter_config:Optional[dict]=None) ->bool:
+    def 区域包含文字(self,文字区域:Tuple[int,int,int,int],文字规则:str,filter_config:Optional[dict]=None,图片放大倍数=1) ->bool:
         截图 = self.线程.截图
         if 截图 is None:
             截图=self.线程.刷新截图()
@@ -876,9 +876,9 @@ class 战斗辅助识别器:
         if not 文字区域 or not 文字规则:
             return False
         if filter_config:           
-            识别文字=self.线程.文字识别器.recognize_text(截图,文字区域,filter_config)
+            识别文字=self.线程.文字识别器.recognize_text(截图,文字区域,filter_config,放大倍数=图片放大倍数)
         else:
-            识别文字=self.线程.文字识别器.recognize_text(截图,文字区域)
+            识别文字=self.线程.文字识别器.recognize_text(截图,文字区域,放大倍数=图片放大倍数)
         
         return  匹配分组关键字(识别文字,文字规则)
     

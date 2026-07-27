@@ -3,7 +3,6 @@
 普通任务定义
 """
 
-
 from core.utils import 缩放区域
 from tasks.base import 任务定义
 from core.task_executors.battle_executor import 战斗任务执行器
@@ -22,7 +21,10 @@ from typing import Optional, Any,List,Tuple
     地图关键字="",
     提前进场秒数=0,
     进副本先检查击杀大怪=False,
+    先杀大怪开始时间=0,
+    先杀大怪结束时间=24,
     普通任务模式="挂元宝",
+
     状态_当前阶=0,
     状态_普通本当前层=0,
     状态_普通任务上次换层时间=time.time(),
@@ -54,6 +56,10 @@ class 普通任务(战斗任务执行器):
         """判断是否需要大怪击杀检查和走位"""
         if not self.任务配置.进副本先检查击杀大怪:
             调试器.trace(self.调试分类, "大怪检查: 未启用")
+            return None
+        h= time.localtime().tm_hour
+        if h< self.任务配置.先杀大怪开始时间 or h>= self.任务配置.先杀大怪结束时间:
+            调试器.trace(self.调试分类, "大怪检查: 不在工作时间")
             return None
         
         # 检查是否刚完成走位处于保护时间
@@ -91,10 +97,17 @@ class 普通任务(战斗任务执行器):
         # 正在移动中
         if self.任务状态.移动开始时间 > 0 and 移动已耗时 < 50 and 静止时长 <= 3:
             调试器.trace(self.调试分类, "大怪检查: 正在走位中")
+            if self._附近有大怪():
+                调试器.debug(self.调试分类, "大怪检查: 检测到大怪，不走位")
+                self.移动完成时间 = time.time()
+                self.任务状态.移动开始时间 = 0
+                self.大怪统计=0
+                
+                return None
             return "正在走位"
         
         # 移动超时且已静止 → 认为到达
-        if self.任务状态.移动开始时间 > 0 and 移动已耗时 >= 50 and 静止时长 > 3:
+        if self.任务状态.移动开始时间 > 0 and (移动已耗时 >= 50 or 静止时长 > 3):
             调试器.state(self.调试分类, "大怪检查: 走位完成")
             self.移动完成时间 = time.time()
             self.任务状态.移动开始时间 = 0
@@ -183,11 +196,12 @@ class 普通任务(战斗任务执行器):
                 if 序号_str not in self.已走位BOSS编号:
                     self.已走位BOSS编号.append(序号_str)
         调试器.trace(self.调试分类, f"大怪检查: 未走位BOSS={self.已走位BOSS编号}")
-                
-                
-
-
-        pass
+    def _附近有大怪(self)-> bool:
+        结果= self.辅助识别器.查找图片单结果(self.游戏配置.区域.焚天炎域.焚天禁地中间地图检索范围.元组,"怪物红点.bmp", 0.99)
+        if 结果 is not None:
+            return True
+        return False
+       
     def 是否在副本中(self) -> bool:
         if self.线程.当前地图 == "盟重省":
             调试器.trace("普通任务", "当前在盟重省，判定不在副本中")
@@ -328,8 +342,8 @@ class 普通任务(战斗任务执行器):
         self._打印战斗状态()
         self._使用道具()
 
-        # from tasks.reward.每日累充 import 每日累充
-        # 每日=每日累充(self.线程.强化奖励管理器)
+        # from tasks.reward.活动检查 import 活动系列强化
+        # 每日=活动系列强化(self.线程.强化奖励管理器)
         # 每日.执行()
 
         # self.通用操作._打开背包()

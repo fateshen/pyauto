@@ -1,7 +1,5 @@
 # tasks/reward/huodong.py
 
-from rich.repr import T
-
 from core.recognition import OCRResult
 from core.utils import 是否为今天, 缩放区域,匹配分组关键字,是否有重叠,提取次数
 from typing import List, Tuple,Dict,Optional
@@ -10,12 +8,16 @@ from core.debug import 调试器
 import time,random
 def 计算红包分配(红包列表: List[Dict], 目标金额: int, 最大超出: int = 10) -> Optional[List[Dict]]:
     """
-    计算红包分配，优先使用面额种类最少、超出最小的方案。
+    计算红包分配：
+    1. 强制使用最大面额（至少1张）
+    2. 剩余部分按种类最少、超出最小匹配
     """
     if not 红包列表:
         return None
     
-    排序列表 = sorted(红包列表, key=lambda x: x["金额"])
+    排序列表 = sorted(红包列表, key=lambda x: x["金额"], reverse=True)
+    最大面额红包 = 排序列表[0]
+    最大面额 = 最大面额红包["金额"]
     
     最佳方案 = None
     最佳种类数 = float('inf')
@@ -28,6 +30,12 @@ def 计算红包分配(红包列表: List[Dict], 目标金额: int, 最大超出
             超出 = 当前总额 - 目标金额
             if 超出 > 最大超出:
                 return
+            
+            # 检查是否使用了最大面额
+            已用面额 = [排序列表[i]["金额"] for i, cnt in 已选 if cnt > 0]
+            if 最大面额 not in 已用面额:
+                return
+            
             种类数 = len(set(i for i, _ in 已选))
             if 种类数 < 最佳种类数 or (种类数 == 最佳种类数 and 超出 < 最佳超出):
                 最佳种类数 = 种类数
@@ -39,15 +47,19 @@ def 计算红包分配(红包列表: List[Dict], 目标金额: int, 最大超出
             return
         
         红包 = 排序列表[idx]
-        # 最多用多少个（不超过数量，不无限加）
-        最大可用 = min(红包["数量"], (目标金额 - 当前总额) // 红包["金额"] + 1)
+        面额 = 红包["金额"]
         
-        for cnt in range(最大可用, -1, -1):
+        最大张数 = min(红包["数量"], (目标金额 - 当前总额 + 面额 - 1) // 面额)
+        
+        for cnt in range(最大张数, -1, -1):
             if cnt > 0:
                 已选.append((idx, cnt))
-            搜索(idx + 1, 当前总额 + cnt * 红包["金额"], 已选)
+            搜索(idx + 1, 当前总额 + cnt * 面额, 已选)
             if cnt > 0:
                 已选.pop()
+            
+            if 最佳超出 == 0 and 最佳种类数 == 1:
+                break
     
     搜索(0, 0, [])
     

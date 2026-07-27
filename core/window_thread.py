@@ -850,22 +850,7 @@ class 窗口线程(threading.Thread):
             time.sleep(self.游戏配置.战斗.等待.主循环间隔秒)
             循环结束时间 = time.time()
     
-    def _盟重特殊任务(self):
-        #特殊活动的检查更新
-        现在 = datetime.datetime.now()
-        分钟= 现在.minute
-        小时= 现在.hour
-        #避免服务器和本地时间误差和延迟导致失败
-        if 分钟> 2:
-            if not 是否为今天(self.上次特殊活动检查时间):
-                self._检查特殊任务今天是否刷新()
-        if 小时==0 and 分钟<= 2:
-            self.特殊活动存在 = False
-           
-        
-
-
-        pass
+    
     
 
     def run(self):

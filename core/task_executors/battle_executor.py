@@ -19,13 +19,9 @@
     - 战斗结束回调() - 战斗结束后的处理
 """
 
-import re
 import time
 from typing import Optional, Tuple, List
 from abc import abstractmethod
-
-from rich.repr import T
-
 from core.utils import 匹配分组关键字, 提取次数, 解析时间文字, 读取图片, 重试,归属情况
 from core.debug import 调试器
 from models.task_config import 任务配置基类

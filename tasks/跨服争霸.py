@@ -215,3 +215,7 @@ class 跨服争霸任务(战斗任务执行器):
     def _领取奖励检查钩子(self) -> str | None:
         self.任务状态.上次匹配核查时间=time.time() - 20
         return super()._领取奖励检查钩子()
+    
+    def 检查退出条件(self) -> bool:
+        """覆盖检查退出条件，这里不需要设置，任务结束会强制弹出"""
+        return False

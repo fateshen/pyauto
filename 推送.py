@@ -43,4 +43,4 @@ def git_sync(project_path, commit_message="自动提交"):
     print("🎉 同步完成！")
 
 # 调用
-git_sync("D:/pyAuto", "自动同步：添加新功能")
+git_sync("E:/pyAuto", "自动同步：添加新功能")

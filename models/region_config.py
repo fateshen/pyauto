@@ -667,7 +667,7 @@ class 决战盟重相关配置(BaseModel):
     决战盟重页面准备按键右边按钮标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(993, 576, 1088, 604))
     决战盟重页面准备按键左边按钮标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(611, 576, 704, 606))
     决战盟重页面挑战次数区域标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(764, 538, 924, 576))
-    决战盟重页面玩家准备情况标签1: 区域坐标 = Field(default_factory=lambda: 区域坐标(595, 542, 720, 568))
+    决战盟重页面玩家准备情况标签1: 区域坐标 = Field(default_factory=lambda: 区域坐标(622,544,696,572))
     决战盟重页面玩家准备情况标签2: 区域坐标 = Field(default_factory=lambda: 区域坐标(816,517,887,539))
     决战盟重页面玩家准备情况标签3: 区域坐标 = Field(default_factory=lambda: 区域坐标(981, 545, 1103, 569))
     决战盟重页面AI确定按钮标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(910, 480, 998, 508))
@@ -879,7 +879,7 @@ class 日常强化相关配置(BaseModel):
 
 class 合成相关配置(BaseModel):
     """合成相关区域"""
-    合成左分类卡区域标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(473, 228, 598, 675))
+    合成左分类卡区域标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(492,230,599,684))
     合成中分类卡区域标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(595, 227, 730, 680))
     合成打造含红点区域标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(905, 611, 1025, 662))
     熔炼页面熔炼按钮标签: 区域坐标 = Field(default_factory=lambda: 区域坐标(799, 362, 877, 388))
@@ -1037,9 +1037,40 @@ class 特殊活动(BaseModel):
     红包取消按钮区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(700,459,780,490))
     红包提示信息搜寻区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(780,400,900,530))
     福利BOSS前往按钮区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(637,621,777,671))
+    BOSS来袭前往按钮区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(987,610,1078,641))
     抢红包界面红包出现范围: 区域坐标 = Field(default_factory=lambda: 区域坐标(796,242,987,669))
     抢红包界面红包出现抢红包按钮区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(903,429,1037,554))
     抢红包界面抢红包返回按钮: 区域坐标 = Field(default_factory=lambda: 区域坐标(936,569,1007,594))
+
+    蓬莱秘境次数区域1: 区域坐标 = Field(default_factory=lambda: 区域坐标(644,333,703,363))
+    蓬莱秘境次数区域3: 区域坐标 = Field(default_factory=lambda: 区域坐标(819,230,882,262))
+    蓬莱秘境次数区域5: 区域坐标 = Field(default_factory=lambda: 区域坐标(823,321,884,351))
+    蓬莱秘境次数区域2: 区域坐标 = Field(default_factory=lambda: 区域坐标(995,322,1054,352))
+    蓬莱秘境次数区域4: 区域坐标 = Field(default_factory=lambda: 区域坐标(816,415,880,449))
+    蓬莱秘境刷新时间1: 区域坐标 = Field(default_factory=lambda: 区域坐标(608,396,688,421))
+    蓬莱秘境刷新时间2: 区域坐标 = Field(default_factory=lambda: 区域坐标(958,381,1047,413))
+    蓬莱秘境刷新时间3: 区域坐标 = Field(default_factory=lambda: 区域坐标(785,295,861,321))
+    蓬莱秘境刷新时间4: 区域坐标 = Field(default_factory=lambda: 区域坐标(783,480,869,504))
+    蓬莱秘境刷新时间5: 区域坐标 = Field(default_factory=lambda: 区域坐标(785,382,868,410))
+    蓬莱秘境进入按钮区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(1078,612,1175,643))
+
+    蓬莱秘境副本内次数1: 区域坐标 = Field(default_factory=lambda: 区域坐标(764,332,805,368))
+    蓬莱秘境副本内次数2: 区域坐标 = Field(default_factory=lambda: 区域坐标(764,384,803,416))
+    蓬莱秘境副本内次数3: 区域坐标 = Field(default_factory=lambda: 区域坐标(764,436,803,462))
+    蓬莱秘境副本内次数4: 区域坐标 = Field(default_factory=lambda: 区域坐标(768,483,799,516))
+    蓬莱秘境副本内次数5: 区域坐标 = Field(default_factory=lambda: 区域坐标(769,536,798,566))
+    蓬莱秘境副本内剩余时间1: 区域坐标 = Field(default_factory=lambda: 区域坐标(872,336,965,364))
+    蓬莱秘境副本内剩余时间2: 区域坐标 = Field(default_factory=lambda: 区域坐标(871,385,963,415))
+    蓬莱秘境副本内剩余时间3: 区域坐标 = Field(default_factory=lambda: 区域坐标(877,432,960,465))
+    蓬莱秘境副本内剩余时间4: 区域坐标 = Field(default_factory=lambda: 区域坐标(872,485,964,515))
+    蓬莱秘境副本内剩余时间5: 区域坐标 = Field(default_factory=lambda: 区域坐标(879,537,962,565))
+    蓬莱秘境副本内首领信息按钮区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(290,74,316,99))
+    蓬莱秘境副本内首领面板归属次数文字验证区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(744,285,828,321))
+
+
+
+
+
 
 
     

@@ -7,14 +7,13 @@ import os
 import time
 import re
 # from rich.panel import p
-from sympy import im
 
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, project_root)
 
 from core.path_manager import check_environment, print_status, get_log_path
 from core.recognition.template_match import  TemplateMatcher
-from core.utils import 读取图片,解析玩家全名
+from core.utils import 解析时间文字, 读取图片,解析玩家全名
 
 
 # # def main():
@@ -131,5 +130,17 @@ if __name__ == "__main__":
     xinx=解析玩家全名(name1)
     print(xinx)
     # 获取并打印子窗口(2123318)
+    import time
 
-    
+    时间戳 = 1783391159.603083
+    时间元组 = time.localtime(时间戳)
+
+    # 格式化为年月日时分
+    结果 = time.strftime("%Y年%m月%d日 %H:%M", 时间元组)
+    print(结果)  # 2026年02月19日 15:40
+
+    # 或用横线分隔
+    结果2 = time.strftime("%Y-%m-%d %H:%M", 时间元组)
+    print(结果2)  # 2026-02-19 15:40
+
+    print( time.localtime().tm_hour)
