@@ -1023,6 +1023,8 @@ class 特殊活动(BaseModel):
     节日试炼五天模式领取每周奖励区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(656,222,1168,321))
     节日犒赏领取区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(873,383,1194,664))
 
+    节日战令领取区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(607,242,1192,675))
+
 
     灵符特惠购买按钮区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(650,605,749,639))
     灵符特惠礼包信息区域: 区域坐标 = Field(default_factory=lambda: 区域坐标(655,464,695,484))
