@@ -84,10 +84,12 @@ cd pyauto
 bash
 python -m venv .venv
 .venv\Scripts\activate
+
 安装依赖
 
 bash
-pip install -r requirements.txt
+uv sync
+
 配置 UMI-OCR
 
 下载 UMI-OCR
@@ -97,6 +99,7 @@ pip install -r requirements.txt
 配置区域坐标
 
 根据你的游戏分辨率修改 config/region_config.json
+注意：扩展任务可能需要新增坐标，请不要直接使用坐标，在region_config按既定格式扩展。方便多种页面偏移使用。
 
 配置调试日志（可选）
 
@@ -104,7 +107,8 @@ pip install -r requirements.txt
 
 打包为 EXE
 bash
-pyinstaller main.spec
+uv run pyinstaller 游戏助手.spec 
+
 使用说明
 启动程序
 bash
