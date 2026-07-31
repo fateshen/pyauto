@@ -1,23 +1,34 @@
 # -*- mode: python ; coding: utf-8 -*-
-from PyInstaller.utils.hooks import collect_submodules
 import sys
 from pathlib import Path
-sys.path.insert(0, SPECPATH)
+
+PROJECT_ROOT = Path(SPECPATH).resolve()
+sys.path.insert(0, str(PROJECT_ROOT))
+
+from core.build_manifest import pyinstaller_hidden_imports
+
+
+for required_path in ("main.py", "config", "帝王霸业图库"):
+    candidate = PROJECT_ROOT / required_path
+    if not candidate.exists():
+        raise FileNotFoundError(f"缺少打包必需路径: {candidate}")
+
+hidden_imports = [
+    "tasks",
+    "tasks.base",
+    "tasks.reward",
+    *pyinstaller_hidden_imports(PROJECT_ROOT),
+]
 
 a = Analysis(
-    ['main.py'],
-    pathex=[],
+    [str(PROJECT_ROOT / 'main.py')],
+    pathex=[str(PROJECT_ROOT)],
     binaries=[],
     datas=[
-        ('config', 'config'),                # 配置文件
-        ('帝王霸业图库', '帝王霸业图库'),      # 图片
+        (str(PROJECT_ROOT / 'config'), 'config'),
+        (str(PROJECT_ROOT / '帝王霸业图库'), '帝王霸业图库'),
     ],
-    hiddenimports=[
-        'tasks',           # 强制导入 __init__.py
-        'tasks.base',      # 强制导入 base.py
-        'tasks.reward',
-        'tasks.reward.base',
-    ],
+    hiddenimports=hidden_imports,
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
