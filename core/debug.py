@@ -2,6 +2,7 @@
 调试日志系统 - 支持多线程独立日志文件，每天自动切换
 """
 import os
+import sys
 import time
 import threading
 from typing import Optional, Dict
@@ -315,7 +316,14 @@ class 线程日志管理器:
     def _输出到控制台(cls, 消息: str):
         """输出到控制台"""
         if cls._控制台启用:
-            print(消息)
+            try:
+                print(消息)
+            except UnicodeEncodeError:
+                编码 = getattr(sys.stdout, "encoding", None) or "utf-8"
+                安全消息 = 消息.encode(编码, errors="backslashreplace").decode(
+                    编码
+                )
+                print(安全消息)
     
     @classmethod
     def _输出到文件(cls, 消息: str):
