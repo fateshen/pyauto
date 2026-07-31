@@ -22,6 +22,7 @@ from typing import Optional, Self, Tuple, List
 import numpy as np
 import datetime
 import re as re_module
+from difflib import SequenceMatcher
 from PySide6.QtCore import QObject, Signal
 
 from core.runtime_state import 运行时公共变量
@@ -38,6 +39,7 @@ from core.debug import 调试器, 初始化线程日志, 关闭线程日志
 from core.common_operations import 通用操作集
 from core.assistant import 战斗辅助识别器
 from core.chat_manager import 聊天管理器
+from core.wecom_notifier import 企业微信通知器
 from core.reward_manager import 强化奖励管理器
 from tasks.base import 任务定义
 import win32api
@@ -122,6 +124,7 @@ class 窗口线程(threading.Thread):
         self.通用操作 = 通用操作集(self)
         
         self.聊天管理器 = 聊天管理器(self)
+        self.企业微信通知器 = 企业微信通知器()
 
         
         self.强化奖励管理器 = 强化奖励管理器(
@@ -254,11 +257,15 @@ class 窗口线程(threading.Thread):
         if self.游戏配置.玩家.发送太古祖龙刷新通知 == False: 
             return
         
-        if self.游戏配置.玩家.上部信息框检查间隔 > time.time()-self.公共变量.上部信息框检查时间: 
+        当前时间 = time.time()
+        if (
+            self.游戏配置.玩家.上部信息框检查间隔
+            > 当前时间 - self.公共变量.上部信息框检查时间
+        ):
             return
+        self.公共变量.上部信息框检查时间 = 当前时间
+
         截图=self.截图
-        if 截图 is None: 
-            截图=self.刷新截图 ()
         if 截图 is None: 
             return
         查询区域=self.游戏配置.区域.主界面.服务器喇叭文字显示区域标签.元组
@@ -281,25 +288,57 @@ class 窗口线程(threading.Thread):
             "background": "black"
         }
         text=self.文字识别器.recognize_text(截图,查询区域,filter_config)
-        if not text and len(text) < 5: return
-        if 匹配分组关键字(text, "太古") :
-            text=f"时间:{datetime.datetime.now().strftime("%H:%M:%S")} {text}"
-            待核验文本 = self._祖龙聊天文字重置(text)
-            队列 = self.公共变量.待发送聊天队列
-            if 队列:
-                最后一项 = 队列[-1].get("内容", "")
-                去符号内容 = self._去除所有符号(待核验文本)
-                去符号最后 = self._去除所有符号(最后一项)
-                if 是否重复聊天内容(去符号内容, 去符号最后, 时间差阈值=3, 相似度阈值=0.85): 
-                    调试器.debug("聊天管理器", "重复内容，跳过") 
-                    return
-                            
-            self.公共变量.待发送聊天队列.append({
-                "频道": "行会",
-                "内容": 待核验文本,
-                "添加时间": time.time()
-            })
-            return  
+        if not text or len(text) < 5:
+            return
+        if 匹配分组关键字(text, "太古|祖龙"):
+            self._处理祖龙事件(text, now=当前时间)
+
+    def _处理祖龙事件(
+        self,
+        text: str,
+        now: float | None = None,
+    ) -> bool:
+        """去重并分发一次祖龙刷新事件。"""
+        标准文本 = (text or "").strip()
+        if not 标准文本:
+            return False
+
+        当前时间 = time.time() if now is None else now
+        去符号内容 = self._去除所有符号(标准文本)
+        上次内容 = self.公共变量.最近祖龙事件文本
+        上次时间 = self.公共变量.最近祖龙事件时间
+        if (
+            上次内容
+            and 当前时间 - 上次时间 <= 60
+            and SequenceMatcher(
+                None,
+                去符号内容,
+                上次内容,
+            ).ratio() >= 0.85
+        ):
+            调试器.debug("聊天通知", "祖龙横幅重复，跳过")
+            return False
+
+        self.公共变量.最近祖龙事件文本 = 去符号内容
+        self.公共变量.最近祖龙事件时间 = 当前时间
+        时间文字 = datetime.datetime.fromtimestamp(当前时间).strftime(
+            "%H:%M:%S"
+        )
+        外部通知文本 = f"时间:{时间文字} {标准文本}"
+        游戏聊天文本 = self._祖龙聊天文字重置(外部通知文本)
+        self.公共变量.待发送聊天队列.append({
+            "频道": "行会",
+            "内容": 游戏聊天文本,
+            "添加时间": 当前时间,
+        })
+
+        玩家 = self.游戏配置.玩家
+        if getattr(玩家, "启用聊天通知", False):
+            self.企业微信通知器.异步发送文本(
+                getattr(玩家, "企业微信机器人Webhook", ""),
+                外部通知文本,
+            )
+        return True
     
      
     def _祖龙聊天文字重置(self, 内容: str) -> str:

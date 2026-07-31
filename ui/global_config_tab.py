@@ -154,6 +154,16 @@ class 全局配置标签页(QWidget):
         通知布局.addRow("启用通知消息:", self.全局_通知启用)
         self.全局_太古通知 = QCheckBox()
         通知布局.addRow("太古祖龙刷新通知:", self.全局_太古通知)
+        self.全局_聊天通知 = QCheckBox()
+        通知布局.addRow("聊天通知:", self.全局_聊天通知)
+        self.全局_企业微信Webhook = QLineEdit()
+        self.全局_企业微信Webhook.setPlaceholderText(
+            "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=..."
+        )
+        通知布局.addRow(
+            "企业微信机器人:",
+            self.全局_企业微信Webhook,
+        )
         布局.addWidget(通知组)
         
         布局.addStretch()
@@ -263,6 +273,8 @@ class 全局配置标签页(QWidget):
         self.全局_攻击模式.setCurrentText(玩家.默认攻击模式)
         self.全局_通知启用.setChecked(玩家.启用通知消息)
         self.全局_太古通知.setChecked(玩家.发送太古祖龙刷新通知)
+        self.全局_聊天通知.setChecked(玩家.启用聊天通知)
+        self.全局_企业微信Webhook.setText(玩家.企业微信机器人Webhook)
     
     # ==================== 编辑副本接口 ====================
     
@@ -288,6 +300,8 @@ class 全局配置标签页(QWidget):
             "攻击模式": self.全局_攻击模式.currentText(),
             "通知启用": self.全局_通知启用.isChecked(),
             "太古通知": self.全局_太古通知.isChecked(),
+            "聊天通知": self.全局_聊天通知.isChecked(),
+            "企业微信Webhook": self.全局_企业微信Webhook.text().strip(),
             "日志开关": self.全局_日志开关.isChecked(),
             "控制台输出": self.全局_控制台输出.isChecked(),
             "文件输出": self.全局_文件输出.isChecked(),
@@ -337,6 +351,10 @@ class 全局配置标签页(QWidget):
             self.全局_通知启用.setChecked(副本["通知启用"])
         if "太古通知" in 副本:
             self.全局_太古通知.setChecked(副本["太古通知"])
+        if "聊天通知" in 副本:
+            self.全局_聊天通知.setChecked(副本["聊天通知"])
+        if "企业微信Webhook" in 副本:
+            self.全局_企业微信Webhook.setText(副本["企业微信Webhook"])
         if "日志开关" in 副本:
             self.全局_日志开关.setChecked(副本["日志开关"])
         if "控制台输出" in 副本:
@@ -347,4 +365,3 @@ class 全局配置标签页(QWidget):
             self.全局_日志级别.setCurrentText(副本["日志级别"])
         if "日志目录" in 副本:
             self.全局_日志目录.setText(副本["日志目录"])
-        
