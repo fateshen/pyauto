@@ -1,0 +1,68 @@
+name: Windows complete release
+
+on:
+  push:
+    branches: [windows-stable]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 120
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Download pinned Umi-OCR runtime
+        shell: pwsh
+        run: |
+          $url = "https://github.com/fateshen/pyauto/releases/download/umi-ocr-local-20260731/Umi-OCR-local-20260731.zip"
+          New-Item -ItemType Directory -Force -Path ".release-cache" | Out-Null
+          Invoke-WebRequest -Uri $url -OutFile ".release-cache\Umi-OCR-local-20260731.zip"
+          Expand-Archive -Path ".release-cache\Umi-OCR-local-20260731.zip" -DestinationPath ".release-cache" -Force
+          if (-not (Test-Path ".release-cache\Umi-OCR\Umi-OCR.exe")) {
+            throw "Umi-OCR release asset is incomplete"
+          }
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Restore locked dependencies
+        run: uv sync --frozen --group dev
+
+      - name: Run Windows-safe tests
+        run: uv run python -m unittest discover -s tests_windows -p "test_*.py"
+
+      - name: Build Windows application
+        run: cmd /c build_windows.bat
+
+      - name: Assemble complete release
+        shell: pwsh
+        run: |
+          if (-not (Test-Path "dist\游戏助手\游戏助手.exe")) {
+            throw "PyInstaller did not create dist\游戏助手\游戏助手.exe"
+          }
+          Copy-Item -Path ".release-cache\Umi-OCR" -Destination "dist\游戏助手\Umi-OCR" -Recurse -Force
+          if (-not (Test-Path "dist\游戏助手\Umi-OCR\Umi-OCR.exe")) {
+            throw "Complete release is missing dist\游戏助手\Umi-OCR\Umi-OCR.exe"
+          }
+          Compress-Archive -Path "dist\游戏助手" -DestinationPath "PyAuto-Windows-complete.zip" -CompressionLevel Optimal
+
+      - name: Upload complete Windows release
+        uses: actions/upload-artifact@v4
+        with:
+          name: PyAuto-Windows-complete
+          path: PyAuto-Windows-complete.zip
+          retention-days: 14
+          if-no-files-found: error
